@@ -1,74 +1,120 @@
-Shooter = {}
+require('bullet')
+Shooter = {
+  IDLE = 1,
+  BLOCKING = 2,
+  SHOOTING = 3,
+  RELOADING = 4,
+  LEFT = 5,
+  RIGHT = 6,
+  BULLET_CAP = 3,
+  STRENGTH_DECAY = 125,
+  STRENGTH_REGEN = 5,
+  MAX_STRENGTH = 100
+}
+Shooter.MAPPINGS = {
+    ['a'] = Shooter.SHOOTING,
+    ['x'] = Shooter.BLOCKING,
+    ['y'] = Shooter.RELOADING
+  }
 Shooter.__index = Shooter
 
-function Shooter.PrepareArm(x, y, world)
-  segments = {}
-  local shoulder = love.physics.newBody(world, x, y, 'static')
-  shoulder:setMass(100)
-  local arm = love.physics.newBody(world, x, y, 'dynamic')
-  local armShape = love.physics.newRectangleShape(20, 5)
-  local armFix = love.physics.newFixture(arm, armShape)
-  love.physics.newRevoluteJoint(shoulder, arm, x, y)
-
-  local forearm = love.physics.newBody(world, x + 20, y, 'dynamic')
-  forearm:setMass(100)
-  local forearmShape = love.physics.newRectangleShape(20, 5)
-  local forearmFix = love.physics.newFixture(forearm, forearmShape)
-  local elbow = love.physics.newRevoluteJoint(arm, forearm, x+20, y, true)
-  elbow:setLimits(0, math.pi/2)
-
-  local hand = love.physics.newBody(world, x+40, y, 'dynamic')
-  local handFix = love.physics.newFixture(hand, love.physics.newRectangleShape(5,5))
-  love.physics.newWeldJoint(hand, forearm, x+40, y)
-  table.insert(segments, armFix)
-  table.insert(segments, forearmFix)
-  table.insert(segments, handFix)
-  return hand, segments
-end
-
-function Shooter.NewShooter(x, y, joystick, world)
+function Shooter.NewShooter(x, y, joystick, facing)
   local self = setmetatable({}, Shooter)
 
   self.position = {
     ['x'] = x, ['y'] = y,
     ['handX'] = 0, ['handY'] = 0
   }
-  self.hand, self.arm = Shooter.PrepareArm(x, y, world)
+  self.bulletsLeft = Shooter.BULLET_CAP
+  self.strength = Shooter.MAX_STRENGTH
   self.joystick = joystick
+  self.facing = facing
 
   return self
 end
 
-function Shooter:updateHandLocation(x, y)
-  if math.abs(x) < 0.1 and math.abs(y) < 0.1 then
-    self:setType('static')
-    return
+function Shooter.determineState(joystick)
+  current_state = Shooter.IDLE
+  for key, state in pairs(Shooter.MAPPINGS) do
+    if joystick:isGamepadDown(key) then
+      current_state = state
+    end
   end
-  self:setType('dynamic')
-  self.hand:setX(self.position.x + x*60)
-  self.hand:setY(self.position.y + y*60)
+  return current_state
 end
 
-function Shooter:setType(bodyType)
-  self.hand:setType(bodyType)
-  for i, segment in ipairs(self.arm) do
-    body = segment:getBody()
-    body:setType(bodyType)
+function Shooter:bindingBox()
+  return self.position.x, self.position.y, 20, 20
+end
+
+function Shooter:setColor()
+  r, g, b = 255, 255, 255
+  if self:isShooting() then
+    g, b = 0, 0
+  elseif self:isReloading() then
+    r, g = 0, 0
+  elseif self:blocksImpact() then
+    r, b = 0, 0
+  end
+  love.graphics.setColor(r, g, b)
+end
+
+function Shooter:update(dt)
+  self.previousState = self.state
+  self.state = Shooter.determineState(self.joystick)
+  if self:isBlocking() then
+    self.strength = math.max(self.strength - Shooter.STRENGTH_DECAY*dt, 0)
+  else
+    self.strength = math.min(self.strength + Shooter.STRENGTH_REGEN*dt, Shooter.MAX_STRENGTH)
+  end
+  self:reload()
+end
+
+function Shooter:isMatchingState()
+  return self.previousState == self.state
+end
+
+function Shooter:isReloading()
+  return not self:isMatchingState() and self.state == Shooter.RELOADING
+end
+
+function Shooter:isBlocking()
+  return self.state == Shooter.BLOCKING
+end
+
+function Shooter:blocksImpact()
+  return self:isBlocking() and self.strength > 0
+end
+
+function Shooter:isShooting()
+  return not self:isMatchingState() and self.state == Shooter.SHOOTING
+end
+
+function Shooter:shoot(speed)
+  if self.bulletsLeft > 0 then
+    gunX, gunY = self:gunPosition()
+    Bullet.FireBullet(gunX, gunY, self.facing, speed)
+    self.bulletsLeft = self.bulletsLeft - 1
   end
 end
 
-function Shooter:update()
-  xAxisLeft = self.joystick:getGamepadAxis('leftx')
-  yAxisLeft = self.joystick:getGamepadAxis('lefty')
-  self:updateHandLocation(xAxisLeft, yAxisLeft)
+function Shooter:reload()
+  if self:isReloading() then
+    self.bulletsLeft = Shooter.BULLET_CAP
+  end
+end
+
+function Shooter:gunPosition()
+  x, y, w, h = self:bindingBox()
+  if self.facing == Shooter.RIGHT then
+    x = x + w
+  end
+  return x, y
 end
 
 function Shooter:draw()
-  for i, segment in ipairs(self.arm) do
-    local body = segment:getBody()
-    local shape = segment:getShape()
-    love.graphics.setColor(75*i, 0, 0)
-    love.graphics.polygon('line', body:getWorldPoints(shape:getPoints()))
-    love.graphics.reset()
-  end
+  self:setColor()
+  love.graphics.rectangle('line', self.position.x, self.position.y, 20, 20)
+  love.graphics.print('Current strength ' .. self.strength, self.position.x - 100, self.position.y - 30)
+  love.graphics.reset()
 end
