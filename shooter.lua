@@ -67,14 +67,20 @@ function Shooter.NewShooter(x, y, joystick, facing, name)
   return self
 end
 
-function Shooter.determineState(joystick)
-  current_state = Shooter.IDLE
+function Shooter:determineState(joystick)
+  prospective_states = {}
   for key, state in pairs(Shooter.MAPPINGS) do
     if joystick:isGamepadDown(key) then
-      current_state = state
+      table.insert(prospective_states, state)
     end
   end
-  return current_state
+  if table.getn(prospective_states) == 1 then
+    return table.remove(prospective_states)
+  elseif table.getn(prospective_states) == 0 then
+    return Shooter.IDLE
+  else
+    return self.state
+  end
 end
 
 function Shooter:clearState()
@@ -91,12 +97,17 @@ end
 function Shooter:update(dt)
   if self.name == 'Stubbed' then return end
   self.previousState = self.state
-  if not self:isDead() then self.state = Shooter.determineState(self.joystick) end
+
+  if not self:isDead() then
+    self.state = self:determineState(self.joystick)
+  end
+
   if self:isBlocking() then
     self.shieldRotation = math.max(self.shieldRotation - Shooter.SHIELD_TIMING*dt, Shooter.SHIELD_UP)
   else
     self.shieldRotation = math.min(self.shieldRotation + Shooter.SHIELD_TIMING*dt, Shooter.SHIELD_DOWN)
   end
+
   self:pullShieldDown(dt)
   self:reload()
 end
