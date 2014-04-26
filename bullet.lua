@@ -4,6 +4,14 @@ Bullet = {
 }
 Bullet.__index = Bullet
 
+Bullet.Assets = {
+  ['Audio'] = {
+    ['Shot'] = love.audio.newSource('Assets/Audio/TOJAM2014 Gun2.mp3')
+  },
+  ['Visual'] = {
+  }
+}
+
 Bullet.LiveBullets = {}
 Bullet.DeadBullets = {}
 
@@ -67,10 +75,13 @@ function Bullet.NewBullet(x, y)
   bullet = table.remove(Bullet.DeadBullets)
   if bullet == nil then
     bullet = setmetatable({}, Bullet)
+    bullet.shot = Bullet.Assets.Audio.Shot:clone()
   end
 
   bullet.x = x
   bullet.y = y
+  bullet.shot:stop()
+  bullet.shot:play()
   return bullet
 end
 

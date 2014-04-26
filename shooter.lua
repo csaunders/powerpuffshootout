@@ -18,20 +18,24 @@ Shooter.MAPPINGS = {
     ['x'] = Shooter.BLOCKING,
     ['y'] = Shooter.RELOADING
 }
-Shooter.ASSETS = {
+Shooter.Assets = {
   [Shooter.IDLE]      = love.graphics.newImage('Assets/Art/placeholderIdle.png'),
   [Shooter.BLOCKING]  = love.graphics.newImage('Assets/Art/placeholderShielding.png'),
   [Shooter.SHOOTING]  = love.graphics.newImage('Assets/Art/placeholderFire.png'),
   [Shooter.RELOADING] = love.graphics.newImage('Assets/Art/placeholderIdle.png'),
   [Shooter.DEAD]      = love.graphics.newImage('Assets/Art/placeholderDead.png'),
   ['shield']          = love.graphics.newImage('Assets/Art/placeholderShield.png'),
+  ['Audio']           = {
+    ['click']         = love.audio.newSource('Assets/Audio/EmptyClick.wav', 'static'),
+    ['death']         = love.audio.newSource('Assets/Audio/TOJAM2014 GunEcho2.mp3', 'static'),
+  }
 }
 
 Shooter.DIMENSIONS = {
-  ['offsetX'] = Shooter.ASSETS[Shooter.IDLE]:getWidth()/3,
-  ['offsetY'] = Shooter.ASSETS[Shooter.IDLE]:getHeight()/2,
-  ['width'] = Shooter.ASSETS[Shooter.IDLE]:getWidth(),
-  ['height'] = Shooter.ASSETS[Shooter.IDLE]:getHeight()
+  ['offsetX'] = Shooter.Assets[Shooter.IDLE]:getWidth()/3,
+  ['offsetY'] = Shooter.Assets[Shooter.IDLE]:getHeight()/2,
+  ['width'] = Shooter.Assets[Shooter.IDLE]:getWidth(),
+  ['height'] = Shooter.Assets[Shooter.IDLE]:getHeight()
 }
 Shooter.__index = Shooter
 
@@ -91,7 +95,7 @@ function Shooter:clearState()
 end
 
 function Shooter:setSprite()
-  self.sprite = Shooter.ASSETS[self.state]
+  self.sprite = Shooter.Assets[self.state]
 end
 
 function Shooter:update(dt)
@@ -165,10 +169,15 @@ function Shooter:shoot(speed)
     gunX, gunY = self:gunPosition()
     Bullet.FireBullet(gunX, gunY, self.facing, speed)
     self.bulletsLeft = self.bulletsLeft - 1
+  else
+    Shooter.Assets.Audio.click:stop()
+    Shooter.Assets.Audio.click:play()
   end
 end
 
 function Shooter:kill()
+  Shooter.Assets.Audio.death:stop()
+  Shooter.Assets.Audio.death:play()
   self.state = Shooter.DEAD
 end
 
@@ -211,7 +220,7 @@ function Shooter:drawShield()
     rot = -rot
     scalex = 1
   end
-  love.graphics.draw(Shooter.ASSETS.shield, x, y, rot, scalex, scaley, ox, oy)
+  love.graphics.draw(Shooter.Assets.shield, x, y, rot, scalex, scaley, ox, oy)
 end
 
 function Shooter:draw()

@@ -1,7 +1,19 @@
 require('shooter')
+require('clean_loopable_song')
 
 minRequiredJoysticks = 2
+Assets = {
+  ['Audio'] = {
+    ['victory'] = love.audio.newSource('Assets/Audio/TOJam2014winnerrocktheme.mp3', 'stream'),
+    ['theme']   = love.audio.newSource('Assets/Audio/TOJam2014westernstandoff.mp3', 'stream')
+  }
+}
+Audio = {
+  ['victory'] = CleanLoopableSong.NewSong(0,9.047,32.026,Assets.Audio.victory),
+  ['theme']   = CleanLoopableSong.NewSong(0,16.069,64.092,Assets.Audio.theme),
+}
 players = {}
+currentSong = nil
 bulletSpeed = 3000
 player1 = nil
 player2 = nil
@@ -9,6 +21,7 @@ message = nil
 
 function love.load(arg)
   if arg[#arg] == "-debug" then require("mobdebug").start() end
+  setSong(Audio.theme)
   count = love.joystick.getJoystickCount()
   if count >= minRequiredJoysticks then
     grabJoysticks()
@@ -30,13 +43,18 @@ function love.keypressed(k, u)
 end
 
 function love.update(dt)
+  currentSong:update()
+  Bullet.UpdateBullets(dt)
+  if anyoneDead() then
+    setSong(Audio.victory)
+  end
+
   for i, p in pairs(players) do
     p:update(dt)
     if p:isShooting() then
       p:shoot(bulletSpeed)
     end
   end
-  Bullet.UpdateBullets(dt)
 end
 
 function love.draw()
@@ -74,6 +92,7 @@ function reset()
   for i, player in pairs(players) do
     player:clearState()
   end
+  setSong(Audio.theme)
 end
 
 function anyoneDead()
@@ -81,6 +100,15 @@ function anyoneDead()
     if player:isDead() then return true end
   end
   return false
+end
+
+function setSong(song)
+  if currentSong == song then return end
+  if currentSong then
+    currentSong:stop()
+  end
+  currentSong = song
+  currentSong:play()
 end
 
 function IsWithinDelta(actual, expected, delta)
