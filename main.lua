@@ -1,6 +1,7 @@
 require('shooter')
 require('clean_loopable_song')
 require('loopable_sprite')
+require('sprite_frame_definitions')
 
 minRequiredJoysticks = 2
 Assets = {
@@ -23,6 +24,14 @@ message = nil
 
 function love.load(arg)
   if arg[#arg] == "-debug" then require("mobdebug").start() end
+
+  callback = function(name)
+    if not name then return end
+    print("Just got the event: " .. name)
+  end
+  test = LoopableSprite.NewSprite(SpriteFrameDefinitions.Princess1, callback)
+  test:setState('dodging')
+
   setSong(Audio.theme)
   count = love.joystick.getJoystickCount()
   if count >= minRequiredJoysticks then
@@ -46,6 +55,7 @@ end
 
 function love.update(dt)
   currentSong:update()
+  test:update(dt)
   Bullet.UpdateBullets(dt)
   if anyoneDead() then
     setSong(Audio.victory)
@@ -60,6 +70,7 @@ function love.update(dt)
 end
 
 function love.draw()
+  test:draw(300, 200, 0, 1, 1, 200, 200)
   for i, player in pairs(players) do
     if Bullet.AnyKilling(player) then
       player:kill()
