@@ -6,6 +6,7 @@ Shooter = {
   RELOADING = 4,
   LEFT = 5,
   RIGHT = 6,
+  DEAD = 7,
   BULLET_CAP = 3,
   STRENGTH_DECAY = 125,
   STRENGTH_REGEN = 5,
@@ -20,8 +21,10 @@ Shooter.ASSETS = {
   [Shooter.IDLE]      = love.graphics.newImage('Assets/Art/placeholderIdle.png'),
   [Shooter.BLOCKING]  = love.graphics.newImage('Assets/Art/placeholderShield.png'),
   [Shooter.SHOOTING]  = love.graphics.newImage('Assets/Art/placeholderFire.png'),
-  [Shooter.RELOADING] = love.graphics.newImage('Assets/Art/placeholderIdle.png')
+  [Shooter.RELOADING] = love.graphics.newImage('Assets/Art/placeholderIdle.png'),
+  [Shooter.DEAD]      = love.graphics.newImage('Assets/Art/placeholderDead.png'),
 }
+
 Shooter.DIMENSIONS = {
   ['offsetX'] = Shooter.ASSETS[Shooter.IDLE]:getWidth()/3,
   ['offsetY'] = Shooter.ASSETS[Shooter.IDLE]:getHeight()/2,
@@ -93,7 +96,7 @@ end
 function Shooter:update(dt)
   if self.name == 'Stubbed' then return end
   self.previousState = self.state
-  self.state = Shooter.determineState(self.joystick)
+  if not self:isDead() then self.state = Shooter.determineState(self.joystick) end
   if self:isBlocking() then
     self.strength = math.max(self.strength - Shooter.STRENGTH_DECAY*dt, 0)
   else
@@ -122,12 +125,20 @@ function Shooter:isShooting()
   return not self:isMatchingState() and self.state == Shooter.SHOOTING
 end
 
+function Shooter:isDead()
+  return self.state == Shooter.DEAD
+end
+
 function Shooter:shoot(speed)
   if self.bulletsLeft > 0 then
     gunX, gunY = self:gunPosition()
     Bullet.FireBullet(gunX, gunY, self.facing, speed)
     self.bulletsLeft = self.bulletsLeft - 1
   end
+end
+
+function Shooter:kill()
+  self.state = Shooter.DEAD
 end
 
 function Shooter:reload()
@@ -137,11 +148,9 @@ function Shooter:reload()
 end
 
 function Shooter:gunPosition()
-  x, y, w, h = self:bindingBox()
-  if self.facing == Shooter.RIGHT then
-    x = x + w
-  end
-  return x, y
+  x, y, _, _, _, ox, oy = self:drawParams()
+  x = x - self.scalex*ox/2
+  return x, y - (oy/2 + 10)
 end
 
 function Shooter:drawParams()
@@ -152,7 +161,7 @@ function Shooter:drawParams()
 end
 
 function Shooter:bindingBox()
-  x, y, r, sx, sy, ox, oy = self:drawParams()
+  x, y, _, _, _, ox, oy = self:drawParams()
   if self.facing == Shooter.RIGHT then
     x = x - ox
   end

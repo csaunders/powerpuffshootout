@@ -2,7 +2,7 @@ require('shooter')
 
 minRequiredJoysticks = 2
 players = {}
-bulletSpeed = 150
+bulletSpeed = 3000
 player1 = nil
 player2 = nil
 message = nil
@@ -32,26 +32,20 @@ function love.update(dt)
     p:update(dt)
     if p:isShooting() then
       p:shoot(bulletSpeed)
-      bulletSpeed = bulletSpeed + 25
     end
   end
   Bullet.UpdateBullets(dt)
 end
 
 function love.draw()
-  player1:draw()
-  if Bullet.AnyKilling(player1) then
-    love.graphics.print("Player 1 has the dead", 600, 400)
-  end
-  player2:draw()
-  if Bullet.AnyKilling(player2) then
-    love.graphics.print("Player 2 has the dead", 100, 400)
+  for i, player in pairs(players) do
+    if Bullet.AnyKilling(player) then
+      player:kill()
+    end
+    player:draw()
   end
   Bullet.DrawBullets()
   love.graphics.print(message, 400, 300)
-  -- if player1:isGamepadDown("a") then
-  --   love.graphics.circle("fill", 100, 100, 50, 100)
-  -- end
 end
 
 function grabJoysticks()
