@@ -15,6 +15,9 @@ function love.load(arg)
     message = "You have sufficient controllers"
   else
     message = "You require additional controllers"
+    player1 = Shooter.Stub(Shooter.LEFT)
+    player2 = Shooter.Stub(Shooter.RIGHT)
+    players = {player1, player2}
   end
 end
 
@@ -57,22 +60,18 @@ function grabJoysticks()
   joysticks = love.joystick.getJoysticks()
   for i, joystick in pairs(joysticks) do
     if not player1 then
-      player1 = Shooter.NewShooter(width - 100, height - 50, joystick, Shooter.LEFT, "Player1")
+      player1 = Shooter.BuildShooter(Shooter.LEFT, "Player1", joystick)
     elseif not player2 then
-      guid = joystick:getGUID()
-      if player1.joystick:getGUID() ~= guid then
-        player2 = Shooter.NewShooter(100, height - 50, joystick, Shooter.RIGHT, "Player2")
+      guid = joystick:getID()
+      if player1.joystick:getID() ~= guid then
+        player2 = Shooter.BuildShooter(Shooter.RIGHT, "Player1", joystick)
       end
     else
       break
     end
 
   end
-  -- player1 = Shooter.NewShooter(width - 100, height - 50, joysticks[1], Shooter.LEFT, "Player1")
-  -- player2 = Shooter.NewShooter(100, height - 50, joysticks[2], Shooter.RIGHT, "Player2")
   players = {player1, player2}
-  -- player1 = joysticks[1]
-  -- player2 = joysticks[2]
 end
 
 function IsWithinDelta(actual, expected, delta)
