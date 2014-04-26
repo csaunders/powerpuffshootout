@@ -24,6 +24,8 @@ end
 function love.keypressed(k, u)
   if k == "escape" then
     love.event.quit()
+  elseif k == "r" then
+    if anyoneDead() then reset() end
   end
 end
 
@@ -66,6 +68,19 @@ function grabJoysticks()
 
   end
   players = {player1, player2}
+end
+
+function reset()
+  for i, player in pairs(players) do
+    player:clearState()
+  end
+end
+
+function anyoneDead()
+  for i, player in pairs(players) do
+    if player:isDead() then return true end
+  end
+  return false
 end
 
 function IsWithinDelta(actual, expected, delta)

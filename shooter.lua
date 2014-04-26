@@ -47,17 +47,15 @@ end
 
 function Shooter.NewShooter(x, y, joystick, facing, name)
   local self = setmetatable({}, Shooter)
+  self:clearState()
 
   self.position = {
     ['x'] = x, ['y'] = y,
     ['handX'] = 0, ['handY'] = 0
   }
-  self.bulletsLeft = Shooter.BULLET_CAP
-  self.strength = Shooter.MAX_STRENGTH
   self.joystick = joystick
   self.facing = facing
   self.name = name
-  self.state = Shooter.IDLE
   if facing == Shooter.LEFT then
     self.scalex = 1
   else
@@ -75,6 +73,12 @@ function Shooter.determineState(joystick)
     end
   end
   return current_state
+end
+
+function Shooter:clearState()
+  self.state = Shooter.IDLE
+  self.bulletsLeft = Shooter.BULLET_CAP
+  self.strength = Shooter.MAX_STRENGTH
 end
 
 function Shooter:setColor()
