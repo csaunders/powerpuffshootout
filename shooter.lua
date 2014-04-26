@@ -8,9 +8,9 @@ Shooter = {
   RIGHT = 6,
   DEAD = 7,
   BULLET_CAP = 3,
-  STRENGTH_DECAY = 125,
-  STRENGTH_REGEN = 5,
-  MAX_STRENGTH = 100
+  SHIELD_UP = 0,
+  SHIELD_DOWN = math.pi/2,
+  SHIELD_TIMING = 7.5
 }
 Shooter.MAPPINGS = {
     ['a'] = Shooter.SHOOTING,
@@ -19,10 +19,11 @@ Shooter.MAPPINGS = {
 }
 Shooter.ASSETS = {
   [Shooter.IDLE]      = love.graphics.newImage('Assets/Art/placeholderIdle.png'),
-  [Shooter.BLOCKING]  = love.graphics.newImage('Assets/Art/placeholderShield.png'),
+  [Shooter.BLOCKING]  = love.graphics.newImage('Assets/Art/placeholderShielding.png'),
   [Shooter.SHOOTING]  = love.graphics.newImage('Assets/Art/placeholderFire.png'),
   [Shooter.RELOADING] = love.graphics.newImage('Assets/Art/placeholderIdle.png'),
   [Shooter.DEAD]      = love.graphics.newImage('Assets/Art/placeholderDead.png'),
+  ['shield']          = love.graphics.newImage('Assets/Art/placeholderShield.png'),
 }
 
 Shooter.DIMENSIONS = {
@@ -78,19 +79,7 @@ end
 function Shooter:clearState()
   self.state = Shooter.IDLE
   self.bulletsLeft = Shooter.BULLET_CAP
-  self.strength = Shooter.MAX_STRENGTH
-end
-
-function Shooter:setColor()
-  r, g, b = 255, 255, 255
-  if self:isShooting() then
-    g, b = 0, 0
-  elseif self:isReloading() then
-    r, g = 0, 0
-  elseif self:blocksImpact() then
-    r, b = 0, 0
-  end
-  love.graphics.setColor(r, g, b)
+  self.shieldRotation = Shooter.SHIELD_DOWN
 end
 
 function Shooter:setSprite()
@@ -102,9 +91,9 @@ function Shooter:update(dt)
   self.previousState = self.state
   if not self:isDead() then self.state = Shooter.determineState(self.joystick) end
   if self:isBlocking() then
-    self.strength = math.max(self.strength - Shooter.STRENGTH_DECAY*dt, 0)
+    self.shieldRotation = math.max(self.shieldRotation - Shooter.SHIELD_TIMING*dt, Shooter.SHIELD_UP)
   else
-    self.strength = math.min(self.strength + Shooter.STRENGTH_REGEN*dt, Shooter.MAX_STRENGTH)
+    self.shieldRotation = math.min(self.shieldRotation + Shooter.SHIELD_TIMING*dt, Shooter.SHIELD_DOWN)
   end
   self:reload()
 end
@@ -122,7 +111,7 @@ function Shooter:isBlocking()
 end
 
 function Shooter:blocksImpact()
-  return self:isBlocking() and self.strength > 0
+  return self:isBlocking() and IsWithinDelta(self.shieldRotation, Shooter.SHIELD_UP, 0.2)
 end
 
 function Shooter:isShooting()
@@ -131,6 +120,10 @@ end
 
 function Shooter:isDead()
   return self.state == Shooter.DEAD
+end
+
+function Shooter:isShieldDown()
+  return self.shieldRotation == Shooter.SHIELD_DOWN
 end
 
 function Shooter:shoot(speed)
@@ -172,11 +165,27 @@ function Shooter:bindingBox()
   return x, (y - oy), Shooter.DIMENSIONS.width/2, Shooter.DIMENSIONS.height
 end
 
+function Shooter:drawSprite()
+  love.graphics.draw(self.sprite, self:drawParams())
+end
+
+function Shooter:drawShield()
+  if self:isShieldDown() then return end
+  x, y, _, scalex, scaley, ox, oy = self:drawParams()
+  rot = self.shieldRotation
+  if self.facing == Shooter.LEFT then
+    rot = -rot
+    scalex = 1
+  end
+  love.graphics.draw(Shooter.ASSETS.shield, x, y, rot, scalex, scaley, ox, oy)
+end
+
 function Shooter:draw()
   self:setSprite()
-  love.graphics.draw(self.sprite, self:drawParams())
+  self:drawSprite()
+  self:drawShield()
   love.graphics.rectangle('line', self:bindingBox())
   -- love.graphics.rectangle('line', self.position.x, self.position.y, 20, 20)
-  love.graphics.print(self.name .. ' current strength ' .. self.strength, self.position.x - 100, self.position.y - 30)
+  love.graphics.print(self.name .. ' shield rot ' .. self.shieldRotation, self.position.x - 100, self.position.y - 30)
   love.graphics.reset()
 end
