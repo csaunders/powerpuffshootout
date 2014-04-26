@@ -74,6 +74,13 @@ function Bullet.NewBullet(x, y)
   return bullet
 end
 
+function Bullet.ClearBullets(x, y)
+  for i, bullet in pairs(Bullet.LiveBullets) do
+    table.insert(Bullet.DeadBullets, bullet)
+  end
+  Bullet.LiveBullets = {}
+end
+
 function Bullet:bindingBox()
   return self.x, self.y, self:getWidth(), self:getHeight()
 end

@@ -2,7 +2,7 @@ require('shooter')
 
 minRequiredJoysticks = 2
 players = {}
-bulletSpeed = 150
+bulletSpeed = 3000
 player1 = nil
 player2 = nil
 message = nil
@@ -15,12 +15,17 @@ function love.load(arg)
     message = "You have sufficient controllers"
   else
     message = "You require additional controllers"
+    player1 = Shooter.Stub(Shooter.LEFT)
+    player2 = Shooter.Stub(Shooter.RIGHT)
+    players = {player1, player2}
   end
 end
 
 function love.keypressed(k, u)
   if k == "escape" then
     love.event.quit()
+  elseif k == "r" then
+    if anyoneDead() then reset() end
   end
 end
 
@@ -29,26 +34,20 @@ function love.update(dt)
     p:update(dt)
     if p:isShooting() then
       p:shoot(bulletSpeed)
-      bulletSpeed = bulletSpeed + 25
     end
   end
   Bullet.UpdateBullets(dt)
 end
 
 function love.draw()
-  player1:draw()
-  if Bullet.AnyKilling(player1) then
-    love.graphics.print("Player 1 has the dead", 600, 400)
-  end
-  player2:draw()
-  if Bullet.AnyKilling(player2) then
-    love.graphics.print("Player 2 has the dead", 100, 400)
+  for i, player in pairs(players) do
+    if Bullet.AnyKilling(player) then
+      player:kill()
+    end
+    player:draw()
   end
   Bullet.DrawBullets()
   love.graphics.print(message, 400, 300)
-  -- if player1:isGamepadDown("a") then
-  --   love.graphics.circle("fill", 100, 100, 50, 100)
-  -- end
 end
 
 function grabJoysticks()
@@ -57,22 +56,31 @@ function grabJoysticks()
   joysticks = love.joystick.getJoysticks()
   for i, joystick in pairs(joysticks) do
     if not player1 then
-      player1 = Shooter.NewShooter(width - 100, height - 50, joystick, Shooter.LEFT, "Player1")
+      player1 = Shooter.BuildShooter(Shooter.LEFT, "Player1", joystick)
     elseif not player2 then
-      guid = joystick:getGUID()
-      if player1.joystick:getGUID() ~= guid then
-        player2 = Shooter.NewShooter(100, height - 50, joystick, Shooter.RIGHT, "Player2")
+      guid = joystick:getID()
+      if player1.joystick:getID() ~= guid then
+        player2 = Shooter.BuildShooter(Shooter.RIGHT, "Player1", joystick)
       end
     else
       break
     end
 
   end
-  -- player1 = Shooter.NewShooter(width - 100, height - 50, joysticks[1], Shooter.LEFT, "Player1")
-  -- player2 = Shooter.NewShooter(100, height - 50, joysticks[2], Shooter.RIGHT, "Player2")
   players = {player1, player2}
-  -- player1 = joysticks[1]
-  -- player2 = joysticks[2]
+end
+
+function reset()
+  for i, player in pairs(players) do
+    player:clearState()
+  end
+end
+
+function anyoneDead()
+  for i, player in pairs(players) do
+    if player:isDead() then return true end
+  end
+  return false
 end
 
 function IsWithinDelta(actual, expected, delta)

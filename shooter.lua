@@ -6,6 +6,7 @@ Shooter = {
   RELOADING = 4,
   LEFT = 5,
   RIGHT = 6,
+  DEAD = 7,
   BULLET_CAP = 3,
   STRENGTH_DECAY = 125,
   STRENGTH_REGEN = 5,
@@ -20,19 +21,38 @@ Shooter.ASSETS = {
   [Shooter.IDLE]      = love.graphics.newImage('Assets/Art/placeholderIdle.png'),
   [Shooter.BLOCKING]  = love.graphics.newImage('Assets/Art/placeholderShield.png'),
   [Shooter.SHOOTING]  = love.graphics.newImage('Assets/Art/placeholderFire.png'),
-  [Shooter.RELOADING] = love.graphics.newImage('Assets/Art/placeholderIdle.png')
+  [Shooter.RELOADING] = love.graphics.newImage('Assets/Art/placeholderIdle.png'),
+  [Shooter.DEAD]      = love.graphics.newImage('Assets/Art/placeholderDead.png'),
+}
+
+Shooter.DIMENSIONS = {
+  ['offsetX'] = Shooter.ASSETS[Shooter.IDLE]:getWidth()/3,
+  ['offsetY'] = Shooter.ASSETS[Shooter.IDLE]:getHeight()/2,
+  ['width'] = Shooter.ASSETS[Shooter.IDLE]:getWidth(),
+  ['height'] = Shooter.ASSETS[Shooter.IDLE]:getHeight()
 }
 Shooter.__index = Shooter
 
+function Shooter.BuildShooter(facing, name, joystick)
+  local width = love.graphics.getWidth()
+  local height = love.graphics.getHeight()
+  if facing == Shooter.RIGHT then
+    x = Shooter.DIMENSIONS.offsetX
+  else
+    x = width - (Shooter.DIMENSIONS.offsetX)
+  end
+  y = height - Shooter.DIMENSIONS.offsetY
+  return Shooter.NewShooter(x, y, joystick, facing, name or 'Stubbed')
+end
+
 function Shooter.NewShooter(x, y, joystick, facing, name)
   local self = setmetatable({}, Shooter)
+  self:clearState()
 
   self.position = {
     ['x'] = x, ['y'] = y,
     ['handX'] = 0, ['handY'] = 0
   }
-  self.bulletsLeft = Shooter.BULLET_CAP
-  self.strength = Shooter.MAX_STRENGTH
   self.joystick = joystick
   self.facing = facing
   self.name = name
@@ -55,8 +75,10 @@ function Shooter.determineState(joystick)
   return current_state
 end
 
-function Shooter:bindingBox()
-  return self.position.x, self.position.y, 20, 20
+function Shooter:clearState()
+  self.state = Shooter.IDLE
+  self.bulletsLeft = Shooter.BULLET_CAP
+  self.strength = Shooter.MAX_STRENGTH
 end
 
 function Shooter:setColor()
@@ -76,8 +98,9 @@ function Shooter:setSprite()
 end
 
 function Shooter:update(dt)
+  if self.name == 'Stubbed' then return end
   self.previousState = self.state
-  self.state = Shooter.determineState(self.joystick)
+  if not self:isDead() then self.state = Shooter.determineState(self.joystick) end
   if self:isBlocking() then
     self.strength = math.max(self.strength - Shooter.STRENGTH_DECAY*dt, 0)
   else
@@ -106,12 +129,20 @@ function Shooter:isShooting()
   return not self:isMatchingState() and self.state == Shooter.SHOOTING
 end
 
+function Shooter:isDead()
+  return self.state == Shooter.DEAD
+end
+
 function Shooter:shoot(speed)
   if self.bulletsLeft > 0 then
     gunX, gunY = self:gunPosition()
     Bullet.FireBullet(gunX, gunY, self.facing, speed)
     self.bulletsLeft = self.bulletsLeft - 1
   end
+end
+
+function Shooter:kill()
+  self.state = Shooter.DEAD
 end
 
 function Shooter:reload()
@@ -121,18 +152,31 @@ function Shooter:reload()
 end
 
 function Shooter:gunPosition()
-  x, y, w, h = self:bindingBox()
+  x, y, _, _, _, ox, oy = self:drawParams()
+  x = x - self.scalex*ox/2
+  return x, y - (oy/2 + 10)
+end
+
+function Shooter:drawParams()
+  x, y = self.position.x, self.position.y
+  r, sx, sy = 0, self.scalex, 1
+  ox, oy = Shooter.DIMENSIONS.width / 2, Shooter.DIMENSIONS.height / 2
+  return  x, y, r, sx, sy, ox, oy
+end
+
+function Shooter:bindingBox()
+  x, y, _, _, _, ox, oy = self:drawParams()
   if self.facing == Shooter.RIGHT then
-    x = x + w
+    x = x - ox
   end
-  return x, y
+  return x, (y - oy), Shooter.DIMENSIONS.width/2, Shooter.DIMENSIONS.height
 end
 
 function Shooter:draw()
   self:setSprite()
-  local offsetX = self.scalex*self.sprite:getWidth()
-  love.graphics.draw(self.sprite, self.position.x - offsetX, self.position.y - self.sprite:getHeight(), 0, self.scalex, 1)
-  love.graphics.rectangle('line', self.position.x, self.position.y, 20, 20)
+  love.graphics.draw(self.sprite, self:drawParams())
+  love.graphics.rectangle('line', self:bindingBox())
+  -- love.graphics.rectangle('line', self.position.x, self.position.y, 20, 20)
   love.graphics.print(self.name .. ' current strength ' .. self.strength, self.position.x - 100, self.position.y - 30)
   love.graphics.reset()
 end
