@@ -10,7 +10,8 @@ Shooter = {
   BULLET_CAP = 3,
   SHIELD_UP = 0,
   SHIELD_DOWN = math.pi/2,
-  SHIELD_TIMING = 7.5
+  SHIELD_TIMING = 7.5,
+  SHIELD_HOLD_TIME = 0.3,
 }
 Shooter.MAPPINGS = {
     ['a'] = Shooter.SHOOTING,
@@ -80,6 +81,7 @@ function Shooter:clearState()
   self.state = Shooter.IDLE
   self.bulletsLeft = Shooter.BULLET_CAP
   self.shieldRotation = Shooter.SHIELD_DOWN
+  self.shieldHeldDuration = 0.0
 end
 
 function Shooter:setSprite()
@@ -95,7 +97,28 @@ function Shooter:update(dt)
   else
     self.shieldRotation = math.min(self.shieldRotation + Shooter.SHIELD_TIMING*dt, Shooter.SHIELD_DOWN)
   end
+  self:pullShieldDown(dt)
   self:reload()
+end
+
+function Shooter:pullShieldDown(dt)
+  if self.state == Shooter.BLOCKING then
+    self.shieldHeldDuration = self.shieldHeldDuration + dt
+  end
+  if not self.pullingShieldDown and self.shieldHeldDuration >= Shooter.SHIELD_HOLD_TIME then
+    self:setPullingShieldDown(true)
+  elseif self.shieldRotation >= Shooter.SHIELD_DOWN then
+    if self.state ~= Shooter.BLOCKING then
+      self:setPullingShieldDown(false)
+    end
+  end
+end
+
+function Shooter:setPullingShieldDown(value)
+  if value == false then
+    self.shieldHeldDuration = 0
+  end
+  self.pullingShieldDown = value
 end
 
 function Shooter:isMatchingState()
@@ -107,7 +130,7 @@ function Shooter:isReloading()
 end
 
 function Shooter:isBlocking()
-  return self.state == Shooter.BLOCKING
+  return self.state == Shooter.BLOCKING and not self.pullingShieldDown
 end
 
 function Shooter:blocksImpact()
@@ -184,6 +207,7 @@ function Shooter:draw()
   self:setSprite()
   self:drawSprite()
   self:drawShield()
+  love.graphics.print("Shield Held Duration:" .. self.shieldHeldDuration .. 's', self.position.x, 200)
   love.graphics.rectangle('line', self:bindingBox())
   -- love.graphics.rectangle('line', self.position.x, self.position.y, 20, 20)
   love.graphics.print(self.name .. ' shield rot ' .. self.shieldRotation, self.position.x - 100, self.position.y - 30)
