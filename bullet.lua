@@ -85,6 +85,7 @@ end
 function Bullet:draw()
   love.graphics.setColor(255, 255, 0)
   love.graphics.rectangle('fill', self.x, self.y, self:getWidth(), self:getHeight())
+  love.graphics.reset()
 end
 
 function Bullet:getWidth()

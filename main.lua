@@ -1,7 +1,6 @@
--- 1024 x 576
 require('shooter')
 
-minRequiredJoysticks = 1
+minRequiredJoysticks = 2
 players = {}
 bulletSpeed = 150
 player1 = nil
@@ -10,7 +9,8 @@ message = nil
 
 function love.load(arg)
   if arg[#arg] == "-debug" then require("mobdebug").start() end
-  if love.joystick.getJoystickCount() == minRequiredJoysticks then
+  count = love.joystick.getJoystickCount()
+  if count >= minRequiredJoysticks then
     grabJoysticks()
     message = "You have sufficient controllers"
   else
@@ -55,8 +55,21 @@ function grabJoysticks()
   width = love.graphics.getWidth()
   height = love.graphics.getHeight()
   joysticks = love.joystick.getJoysticks()
-  player1 = Shooter.NewShooter(width - 100, height - 50, joysticks[1], Shooter.LEFT)
-  player2 = Shooter.NewShooter(100, height - 50, joysticks[1], Shooter.RIGHT)
+  for i, joystick in pairs(joysticks) do
+    if not player1 then
+      player1 = Shooter.NewShooter(width - 100, height - 50, joystick, Shooter.LEFT, "Player1")
+    elseif not player2 then
+      guid = joystick:getGUID()
+      if player1.joystick:getGUID() ~= guid then
+        player2 = Shooter.NewShooter(100, height - 50, joystick, Shooter.RIGHT, "Player2")
+      end
+    else
+      break
+    end
+
+  end
+  -- player1 = Shooter.NewShooter(width - 100, height - 50, joysticks[1], Shooter.LEFT, "Player1")
+  -- player2 = Shooter.NewShooter(100, height - 50, joysticks[2], Shooter.RIGHT, "Player2")
   players = {player1, player2}
   -- player1 = joysticks[1]
   -- player2 = joysticks[2]

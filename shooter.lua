@@ -15,10 +15,16 @@ Shooter.MAPPINGS = {
     ['a'] = Shooter.SHOOTING,
     ['x'] = Shooter.BLOCKING,
     ['y'] = Shooter.RELOADING
-  }
+}
+Shooter.ASSETS = {
+  [Shooter.IDLE]      = love.graphics.newImage('Assets/Art/placeholderIdle.png'),
+  [Shooter.BLOCKING]  = love.graphics.newImage('Assets/Art/placeholderShield.png'),
+  [Shooter.SHOOTING]  = love.graphics.newImage('Assets/Art/placeholderFire.png'),
+  [Shooter.RELOADING] = love.graphics.newImage('Assets/Art/placeholderIdle.png')
+}
 Shooter.__index = Shooter
 
-function Shooter.NewShooter(x, y, joystick, facing)
+function Shooter.NewShooter(x, y, joystick, facing, name)
   local self = setmetatable({}, Shooter)
 
   self.position = {
@@ -29,6 +35,12 @@ function Shooter.NewShooter(x, y, joystick, facing)
   self.strength = Shooter.MAX_STRENGTH
   self.joystick = joystick
   self.facing = facing
+  self.name = name
+  if facing == Shooter.LEFT then
+    self.scalex = 1
+  else
+    self.scalex = -1
+  end
 
   return self
 end
@@ -57,6 +69,10 @@ function Shooter:setColor()
     r, b = 0, 0
   end
   love.graphics.setColor(r, g, b)
+end
+
+function Shooter:setSprite()
+  self.sprite = Shooter.ASSETS[self.state]
 end
 
 function Shooter:update(dt)
@@ -113,8 +129,10 @@ function Shooter:gunPosition()
 end
 
 function Shooter:draw()
-  self:setColor()
+  self:setSprite()
+  local offsetX = self.scalex*self.sprite:getWidth()
+  love.graphics.draw(self.sprite, self.position.x - offsetX, self.position.y - self.sprite:getHeight(), 0, self.scalex, 1)
   love.graphics.rectangle('line', self.position.x, self.position.y, 20, 20)
-  love.graphics.print('Current strength ' .. self.strength, self.position.x - 100, self.position.y - 30)
+  love.graphics.print(self.name .. ' current strength ' .. self.strength, self.position.x - 100, self.position.y - 30)
   love.graphics.reset()
 end
