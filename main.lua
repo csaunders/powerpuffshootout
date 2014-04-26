@@ -1,5 +1,6 @@
 require('shooter')
 require('clean_loopable_song')
+require('loopable_sprite')
 
 minRequiredJoysticks = 2
 Assets = {
@@ -12,6 +13,7 @@ Audio = {
   ['victory'] = CleanLoopableSong.NewSong(0,9.047,32.026,Assets.Audio.victory),
   ['theme']   = CleanLoopableSong.NewSong(0,16.069,64.092,Assets.Audio.theme),
 }
+playMusic = false
 players = {}
 currentSong = nil
 bulletSpeed = 3000

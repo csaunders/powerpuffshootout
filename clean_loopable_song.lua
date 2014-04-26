@@ -12,6 +12,7 @@ function CleanLoopableSong.NewSong(start, loopPoint, finish, source)
 end
 
 function CleanLoopableSong:play()
+  if not playMusic then return end
   self.source:seek(self.start)
   self.source:play()
 end
