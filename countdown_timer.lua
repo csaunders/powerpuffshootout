@@ -26,8 +26,8 @@ function CountdownTimer:reset()
   self.countingDown = true
 
   math.randomseed(self.seed)
-  self.frameDuration = math.random(3, 5)*10
-  self.step = math.random(3, 6)*10
+  self.frameDuration = 20
+  self.step = 30
 end
 
 function CountdownTimer:update(dt)

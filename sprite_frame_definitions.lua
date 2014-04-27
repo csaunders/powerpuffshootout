@@ -53,11 +53,11 @@ SpriteFrameDefinitions.Princess1 = {
   ['death'] = {
     {
       ['image'] = 'Assets/Art/pixel anims/p2-dodge-1.png',
-      ['duration'] = 0.2,
+      ['duration'] = 0.0,
     },
     {
       ['image'] = 'Assets/Art/pixel anims/p2-death-1.png',
-      ['duration'] = 2.245,
+      ['duration'] = 1.045,
       ['event'] = 'doneDeath',
     },
     {
