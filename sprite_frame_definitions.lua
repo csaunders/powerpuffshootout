@@ -26,11 +26,16 @@ SpriteFrameDefinitions.Princess1 = {
     },
     {
       ['image'] = 'Assets/Art/pixel anims/p2-fire-2.png',
-      ['duration'] = 0.1,
+      ['duration'] = 0.05,
+      ['xoffset'] = 16,
       ['event'] = 'fire',
     },
     {
       ['image'] = 'Assets/Art/pixel anims/p2-fire-3.png',
+      ['duration'] = 0.05,
+    },
+    {
+      ['image'] = 'Assets/Art/pixel anims/p2-fire-4.png',
       ['duration'] = 0.5,
     }
   },
