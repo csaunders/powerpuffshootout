@@ -13,7 +13,7 @@ Shooter = {
   SHIELD_DOWN = math.pi/2,
   SHIELD_TIMING = 7.5,
   SHIELD_HOLD_TIME = 0.3,
-  PERFORMING = 8,
+  PERFORMING = 8
 }
 Shooter.MAPPINGS = {
     ['a'] = 'shooting',
@@ -30,6 +30,7 @@ Shooter.Assets = {
   ['Audio']           = {
     ['click']         = love.audio.newSource('Assets/Audio/EmptyClick.wav', 'static'),
     ['death']         = love.audio.newSource('Assets/Audio/TOJAM2014 GunEcho2.mp3', 'static'),
+    ['deathScream']   = love.audio.newSource('Assets/Audio/deathScream.wav', 'static')
   }
 }
 
@@ -94,6 +95,8 @@ function Shooter:eventHandler()
     if name == 'animationEnd' then
       self.sprite:setState('idle')
       self.state = Shooter.IDLE
+    elseif name == 'doneDeath' then
+      self.state = Shooter.DEAD
     elseif name == 'fire' then
       self.state = Shooter.SHOOTING
     elseif name == 'dodge' then
@@ -159,9 +162,12 @@ function Shooter:shoot(speed)
 end
 
 function Shooter:kill()
-  Shooter.Assets.Audio.death:stop()
-  Shooter.Assets.Audio.death:play()
-  self.state = Shooter.DEAD
+  -- Shooter.Assets.Audio.death:stop()
+  -- Shooter.Assets.Audio.death:play()
+  Shooter.Assets.Audio.deathScream:stop()
+  Shooter.Assets.Audio.deathScream:play()
+  self.sprite:setState('death')
+  self.state = Shooter.PERFORMING
 end
 
 function Shooter:reload()

@@ -6,7 +6,8 @@ Bullet.__index = Bullet
 
 Bullet.Assets = {
   ['Audio'] = {
-    ['Shot'] = love.audio.newSource('Assets/Audio/TOJAM2014 Gun2.mp3')
+    ['Shot'] = love.audio.newSource('Assets/Audio/TOJAM2014 Gun2.mp3', 'static'),
+    ['Ricochet'] = love.audio.newSource('Assets/Audio/ricochet.wav', 'static')
   },
   ['Visual'] = {
   }
@@ -42,6 +43,8 @@ function Bullet.UpdateBullets(dt)
   for i, bullet in pairs(Bullet.LiveBullets) do
     if bullet then
       if bullet:dead() then
+        bullet.ricochet:stop()
+        bullet.ricochet:play()
         table.insert(Bullet.DeadBullets, bullet)
         Bullet.LiveBullets[i] = nil
       else
@@ -76,6 +79,7 @@ function Bullet.NewBullet(x, y)
   if bullet == nil then
     bullet = setmetatable({}, Bullet)
     bullet.shot = Bullet.Assets.Audio.Shot:clone()
+    bullet.ricochet = Bullet.Assets.Audio.Ricochet:clone()
   end
 
   bullet.x = x
@@ -85,7 +89,7 @@ function Bullet.NewBullet(x, y)
   return bullet
 end
 
-function Bullet.ClearBullets(x, y)
+function Bullet.ClearBullets()
   for i, bullet in pairs(Bullet.LiveBullets) do
     table.insert(Bullet.DeadBullets, bullet)
   end

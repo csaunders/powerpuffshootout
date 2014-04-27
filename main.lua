@@ -26,7 +26,7 @@ Sprites = {
   ['Princess1'] = SpriteFrameDefinitions.Princess1,
   ['Princess2'] = SpriteFrameDefinitions.Princess1,
 }
-playMusic = false
+playMusic = true
 controllersOn = false
 currentGameState = 3
 gameStateCounter = 0
@@ -82,7 +82,9 @@ end
 function love.draw()
   for i, player in pairs(players) do
     if Bullet.AnyKilling(player) then
+      currentSong:stop()
       player:kill()
+      Bullet.ClearBullets()
     end
     player:draw()
   end
@@ -119,6 +121,7 @@ function reset()
 end
 
 function updateCurrentGameState(dt)
+  if currentSong then currentSong:update() end
   if gameStates[currentGameState](dt) then
     currentGameState = currentGameState + 1
     gameStateCounter = 0
