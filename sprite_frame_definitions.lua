@@ -134,28 +134,28 @@ SpriteFrameDefinitions.Princess2 = {
   },
 ['death'] = {
     {
-      ['image'] = 'Assets/Art/pixel anims/ChemoDeath1.png',
+      ['image'] = 'Assets/Art/pixel anims/Chemo_Death1.png',
       ['duration'] = 0.1,
     },
     {
-      ['image'] = 'Assets/Art/pixel anims/ChemoDeath2.png',
+      ['image'] = 'Assets/Art/pixel anims/Chemo_Death2.png',
       ['duration'] = 0.15,
     },
     {
-      ['image'] = 'Assets/Art/pixel anims/ChemoDeath3.png',
+      ['image'] = 'Assets/Art/pixel anims/Chemo_Death3.png',
       ['duration'] = 0.3,
     },
     {
-      ['image'] = 'Assets/Art/pixel anims/ChemoDeath4.png',
+      ['image'] = 'Assets/Art/pixel anims/Chemo_Death4.png',
       ['duration'] = 0.4,
     },
     {
-      ['image'] = 'Assets/Art/pixel anims/ChemoDeath5.png',
+      ['image'] = 'Assets/Art/pixel anims/Chemo_Death5.png',
       ['duration'] = 0.05,
       ['event'] = 'doneDeath',
     },
     {
-      ['image'] = 'Assets/Art/pixel anims/ChemoDeath5.png',
+      ['image'] = 'Assets/Art/pixel anims/Chemo_Death5.png',
       ['duration'] = 0.1,
       ['next'] = 6
     },
