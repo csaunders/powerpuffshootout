@@ -42,7 +42,7 @@ SpriteFrameDefinitions.Princess1 = {
 ['dodging'] = {
     {
       ['image'] = 'Assets/Art/pixel anims/p2-dodge-1.png',
-      ['duration'] = 0.15,
+      ['duration'] = 0.10,
       ['event'] = 'dodge'
     },
     {
