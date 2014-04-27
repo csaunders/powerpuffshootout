@@ -37,7 +37,7 @@ player1 = nil
 player2 = nil
 message = nil
 
-dimmer = ScreenDimmer.NewScreenDimmer(2.0, 2, 255, 0, 0)
+dimmer = ScreenDimmer.NewScreenDimmer(2.0, 2, 0x00, 0x00, 0x00)
 countdown = CountdownTimer.ThreeTwoOneDraw()
 
 function love.load(arg)
