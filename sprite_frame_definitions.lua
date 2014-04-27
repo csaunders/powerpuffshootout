@@ -94,6 +94,7 @@ SpriteFrameDefinitions.Princess1 = {
     {
       ['image'] = 'Assets/Art/pixel anims/p2-taunt-1.png',
       ['duration'] = 0.08,
+      ['event'] = 'taunt'
     },
     {
       ['image'] = 'Assets/Art/pixel anims/p2-taunt-2.png',

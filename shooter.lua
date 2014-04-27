@@ -4,7 +4,7 @@ Shooter = {
   IDLE = 1,
   BLOCKING = 2,
   SHOOTING = 3,
-  RELOADING = 4,
+  TAUNTING = 4,
   LEFT = 5,
   RIGHT = 6,
   DEAD = 7,
@@ -18,6 +18,7 @@ Shooter = {
 Shooter.MAPPINGS = {
     ['a'] = 'shooting',
     ['x'] = 'dodging',
+    ['b'] = 'taunt'
 }
 Shooter.Assets = {
   ['Audio']           = {
@@ -95,6 +96,8 @@ function Shooter:eventHandler()
     elseif name == 'dodge' then
       self.state = Shooter.BLOCKING
     elseif name == 'dodgeDone' then
+      self.state = Shooter.PERFORMING
+    elseif name == 'taunt' then
       self.state = Shooter.PERFORMING
     else
       LogUnhandledEvent('Shooter', name)
