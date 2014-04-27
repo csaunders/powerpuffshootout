@@ -61,18 +61,30 @@ SpriteFrameDefinitions.Princess1 = {
   },
   ['death'] = {
     {
-      ['image'] = 'Assets/Art/pixel anims/p2-dodge-1.png',
-      ['duration'] = 0.0,
+      ['image'] = 'Assets/Art/pixel anims/p2-death-1.png',
+      ['duration'] = 0.1,
     },
     {
-      ['image'] = 'Assets/Art/pixel anims/p2-death-1.png',
-      ['duration'] = 1.045,
+      ['image'] = 'Assets/Art/pixel anims/p2-death-2.png',
+      ['duration'] = 0.15,
+    },
+    {
+      ['image'] = 'Assets/Art/pixel anims/p2-death-3.png',
+      ['duration'] = 0.3,
+    },
+    {
+      ['image'] = 'Assets/Art/pixel anims/p2-death-4.png',
+      ['duration'] = 0.4,
+    },
+    {
+      ['image'] = 'Assets/Art/pixel anims/p2-death-5.png',
+      ['duration'] = 0.05,
       ['event'] = 'doneDeath',
     },
     {
-      ['image'] = 'Assets/Art/pixel anims/p2-death-1.png',
+      ['image'] = 'Assets/Art/pixel anims/p2-death-5.png',
       ['duration'] = 0.1,
-      ['next'] = 3
+      ['next'] = 6
     },
   },
 }
@@ -120,16 +132,32 @@ SpriteFrameDefinitions.Princess2 = {
       ['duration'] = 0.15,
     }
   },
-  ['death'] = {
+['death'] = {
     {
-      ['image'] = 'Assets/Art/pixel anims/Chemo_Death.png',
-      ['duration'] = 1.045,
+      ['image'] = 'Assets/Art/pixel anims/ChemoDeath1.png',
+      ['duration'] = 0.1,
+    },
+    {
+      ['image'] = 'Assets/Art/pixel anims/pChemoDeath2.png',
+      ['duration'] = 0.15,
+    },
+    {
+      ['image'] = 'Assets/Art/pixel anims/ChemoDeath3.png',
+      ['duration'] = 0.3,
+    },
+    {
+      ['image'] = 'Assets/Art/pixel anims/ChemoDeath4.png',
+      ['duration'] = 0.4,
+    },
+    {
+      ['image'] = 'Assets/Art/pixel anims/ChemoDeath5.png',
+      ['duration'] = 0.05,
       ['event'] = 'doneDeath',
     },
     {
-      ['image'] = 'Assets/Art/pixel anims/Chemo_Death.png',
+      ['image'] = 'Assets/Art/pixel anims/ChemoDeath5.png',
       ['duration'] = 0.1,
-      ['next'] = 2
+      ['next'] = 6
     },
   },
 }
