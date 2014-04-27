@@ -23,20 +23,23 @@ SpriteFrameDefinitions.Princess1 = {
     {
       ['image'] = 'Assets/Art/pixel anims/p2-fire-1.png',
       ['duration'] = 0.3,
+      ['xoffset'] = -16,
     },
     {
       ['image'] = 'Assets/Art/pixel anims/p2-fire-2.png',
       ['duration'] = 0.1,
-      ['xoffset'] = -16,
+      ['xoffset'] = -32,
       ['event'] = 'fire'
     },
     {
       ['image'] = 'Assets/Art/pixel anims/p2-fire-3.png',
       ['duration'] = 0.1,
+      ['xoffset'] = -16,
     },
     {
       ['image'] = 'Assets/Art/pixel anims/p2-fire-4.png',
       ['duration'] = 0.4,
+      ['xoffset'] = -16,
     }
   },
 ['dodging'] = {
@@ -55,7 +58,7 @@ SpriteFrameDefinitions.Princess1 = {
       ['event'] = 'dodgeDone',
     },
     {
-      ['image'] = 'Assets/Art/pixel anims/p2-dodge-3.png',
+      ['image'] = 'Assets/Art/pixel anims/p2-dodge-4.png',
       ['duration'] = 0.15,
     }
   },
