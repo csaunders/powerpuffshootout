@@ -14,9 +14,9 @@ Assets = {
     ['theme']   = love.audio.newSource('Assets/Audio/TOJam2014westernstandoff.mp3', 'stream')
   },
   ['Graphics'] = {
-    ['howToPlay'] = love.graphics.newImage('Assets/Art/placeholderInstructions.png'),
+    ['howToPlay'] = love.graphics.newImage('Assets/Art/xbox_Controls.png'),
     ['background'] = love.graphics.newImage('Assets/Art/background.png'),
-    ['replay'] = love.graphics.newImage('Assets/Art/replay.png'),
+    ['replay'] = love.graphics.newImage('Assets/Art/xbox_menu.png'),
   }
 }
 Audio = {
@@ -30,7 +30,7 @@ Sprites = {
 gameDebug = false
 playMusic = true
 controllersOn = false
-currentGameState = 3
+currentGameState = 4
 gameStateCounter = 0
 identificationTiming = 0
 players = {}
@@ -145,13 +145,13 @@ function identifyPlayers(dt)
   else
     vib = 0
   end
-  print(identificationTiming)
   player1.joystick:setVibration(vib, 0)
   player2.joystick:setVibration(0, vib)
 end
 
 function updateCurrentGameState(dt)
   if currentSong then currentSong:update() end
+  print(currentGameState)
   if gameStates[currentGameState](dt) then
     currentGameState = currentGameState + 1
     gameStateCounter = 0
@@ -183,13 +183,28 @@ function gameover(dt)
       currentGameState = 0
     elseif player.joystick:isGamepadDown('start') then
       currentGameState = 1
+    elseif player.joystick:isGamepadDown('y') then
+      return true
     end
-    if currentGameState ~= 4 then reset() end
+    if currentGameState < 4 then reset() end
   end
   return currentGameState ~= 4
 end
 
-gameStates = {gameOverlay, countDown, play, gameover}
+function credits(dt)
+  controllersOn = false
+  for i, player in pairs(players) do
+    if player.joystick:isGamepadDown('back') then
+      currentGameState = 0
+    elseif player.joystick:isGamepadDown('start') then
+      currentGameState = 1
+    end
+    if currentGameState < 5 then reset() end
+  end
+  return currentGameState ~= 5
+end
+
+gameStates = {gameOverlay, countDown, play, gameover, credits}
 
 function anyoneDead()
   for i, player in pairs(players) do
@@ -214,6 +229,8 @@ function DrawOverlay()
     countdown:draw()
   elseif currentGameState == 4 then
     love.graphics.draw(Assets.Graphics.replay, 0, 0)
+  elseif currentGameState == 5 then
+    love.graphics.rectangle('fill', 0, 0, 50, 50)
   end
   love.graphics.reset()
 end

@@ -8,14 +8,16 @@ JoystickWrapper.Mappings = {
     ['a'] = 'x',
     ['b'] = 'c',
     ['back'] = 'return',
-    ['start'] = '\\'
+    ['start'] = '\\',
+    ['y'] = ' '
   },
   ['Player2'] = {
     ['x'] = ',',
     ['a'] = '.',
     ['b'] = '/',
     ['back'] = 'return',
-    ['start'] = '\\'
+    ['start'] = '\\',
+    ['y'] = ' '
   }
 }
 
