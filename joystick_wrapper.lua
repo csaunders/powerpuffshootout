@@ -48,3 +48,8 @@ function JoystickWrapper:isKeyboardPressed(button)
   key = self.mappings[button]
   return key and love.keyboard.isDown(key)
 end
+
+function JoystickWrapper:setVibration(left, right)
+  if not self.joystick then return end
+  self.joystick:setVibration(left, right)
+end

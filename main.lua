@@ -31,6 +31,7 @@ playMusic = true
 controllersOn = false
 currentGameState = 3
 gameStateCounter = 0
+identificationTiming = 0
 players = {}
 currentSong = nil
 bulletSpeed = 4800
@@ -66,6 +67,7 @@ function love.keypressed(k, u)
 end
 
 function love.update(dt)
+  identifyPlayers(dt)
   updateCurrentGameState(dt)
   dimmer:update(dt)
   Bullet.UpdateBullets(dt)
@@ -132,6 +134,18 @@ function reset()
     player:clearState()
   end
   setSong(Audio.theme)
+end
+
+function identifyPlayers(dt)
+  if identificationTiming < 2 then
+    vib = 1
+    identificationTiming = identificationTiming + dt
+  else
+    vib = 0
+  end
+  print(identificationTiming)
+  player1.joystick:setVibration(vib, 0)
+  player2.joystick:setVibration(0, vib)
 end
 
 function updateCurrentGameState(dt)
