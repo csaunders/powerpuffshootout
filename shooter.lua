@@ -97,6 +97,8 @@ function Shooter:eventHandler()
       self.state = Shooter.BLOCKING
     elseif name == 'dodgeDone' then
       self.state = Shooter.PERFORMING
+    else
+      LogUnhandledEvent('Shooter', name)
     end
   end
 end
@@ -198,9 +200,14 @@ function Shooter:drawSprite()
 end
 
 function Shooter:draw()
-  love.graphics.rectangle('line', self:bindingBox())
-  if self.state == Shooter.DEAD then love.graphics.setColor(255, 0, 0) end
+  self:drawDebugInfo()
   self:drawSprite()
-  love.graphics.print(self.name, self.position.x, self.position.y - 200)
   love.graphics.reset()
+end
+
+function Shooter:drawDebugInfo()
+  if not debug then return end
+  if self.state == Shooter.DEAD then love.graphics.setColor(255, 0, 0) end
+  love.graphics.rectangle('line', self:bindingBox())
+  love.graphics.print(self.name, self.position.x, self.position.y - 200)
 end

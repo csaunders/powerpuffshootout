@@ -27,6 +27,7 @@ Sprites = {
   ['Princess1'] = SpriteFrameDefinitions.Princess1,
   ['Princess2'] = SpriteFrameDefinitions.Princess1,
 }
+debug = false
 playMusic = true
 controllersOn = false
 dimmer = ScreenDimmer.NewScreenDimmer(2.0, 2, 255, 0, 0)
@@ -40,7 +41,10 @@ player2 = nil
 message = nil
 
 function love.load(arg)
-  if arg[#arg] == "-debug" then require("mobdebug").start() end
+  if arg[#arg] == "-debug" then
+    debug = true
+    require("mobdebug").start()
+  end
 
   setSong(Audio.theme)
   count = love.joystick.getJoystickCount()
@@ -228,4 +232,9 @@ function CheckCollision(x1,y1,w1,h1, x2,y2,w2,h2)
          x2 < x1+w1 and
          y1 < y2+h2 and
          y2 < y1+h1
+end
+
+function LogUnhandledEvent(class, event)
+  if not event then return end
+  print('[' .. class .. '] Unhandled Event: ' .. event)
 end
