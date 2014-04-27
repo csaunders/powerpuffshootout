@@ -3,6 +3,7 @@ require('clean_loopable_song')
 require('loopable_sprite')
 require('sprite_frame_definitions')
 require('screen_dimmer')
+require('countdown_timer')
 
 minRequiredJoysticks = 2
 Assets = {
@@ -27,11 +28,10 @@ Sprites = {
   ['Princess1'] = SpriteFrameDefinitions.Princess1,
   ['Princess2'] = SpriteFrameDefinitions.Princess1,
 }
-debug = false
+gameDebug = false
 playMusic = true
 controllersOn = false
-dimmer = ScreenDimmer.NewScreenDimmer(2.0, 2, 255, 0, 0)
-currentGameState = 3
+currentGameState = 1
 gameStateCounter = 0
 players = {}
 currentSong = nil
@@ -40,9 +40,12 @@ player1 = nil
 player2 = nil
 message = nil
 
+dimmer = ScreenDimmer.NewScreenDimmer(2.0, 2, 255, 0, 0)
+countdown = CountdownTimer.ThreeTwoOneDraw()
+
 function love.load(arg)
   if arg[#arg] == "-debug" then
-    debug = true
+    gameDebug = true
     require("mobdebug").start()
   end
 
@@ -132,6 +135,7 @@ end
 
 function reset()
   dimmer:reset()
+  countdown:reset()
   for i, player in pairs(players) do
     player:clearState()
   end
@@ -143,6 +147,7 @@ function updateCurrentGameState(dt)
   if gameStates[currentGameState](dt) then
     currentGameState = currentGameState + 1
     gameStateCounter = 0
+    if currentGameState == 2 then countdown:handleEvent() end
   end
 end
 
@@ -154,8 +159,8 @@ end
 
 function countDown(dt)
   controllersOn = false
-  gameStateCounter = gameStateCounter + dt*300
-  return gameStateCounter > 500
+  countdown:update(dt)
+  return not countdown:checkCountingDown()
 end
 
 function play(dt)
@@ -199,22 +204,7 @@ function DrawOverlay()
   if currentGameState == 1 then
     love.graphics.draw(Assets.Graphics.howToPlay, 0, 0)
   elseif currentGameState == 2 then
-    if gameStateCounter > 0 and gameStateCounter < 375 then
-      love.graphics.setColor(255, 0, 0)
-      love.graphics.draw(Assets.Graphics.three, 0, 0)
-    end
-    if gameStateCounter > 125 and gameStateCounter < 375 then
-      love.graphics.setColor(0, 255, 0)
-      love.graphics.draw(Assets.Graphics.two, 0, 0)
-    end
-    if gameStateCounter > 250 and gameStateCounter < 375 then
-      love.graphics.setColor(0, 0, 255)
-      love.graphics.draw(Assets.Graphics.one, 0, 0)
-    end
-    if gameStateCounter > 375 then
-      love.graphics.setColor(255, 255, 255)
-      love.graphics.draw(Assets.Graphics.draw, 0, 0)
-    end
+    countdown:draw()
   elseif currentGameState == 4 then
     love.graphics.draw(Assets.Graphics.replay, 0, 0)
   end

@@ -16,6 +16,7 @@ function SpriteFrame.NewFrame(definition)
   self.image = love.graphics.newImage(definition.image)
   self.event = definition.event
   self.color = definition.color
+  self.drawPrevious = definition.drawPrevious
   self.nextFrame = definition.next
   return self
 end

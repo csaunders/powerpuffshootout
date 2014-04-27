@@ -1,13 +1,13 @@
 require('countdown_definitions')
 CountdownTimer = {}
 CountdownTimer.__index = CountdownTimer
-Countdown.Events = {
-  ['boom'] = 'BOOM!',
-  ['draw'] = 'Draw!!'
+CountdownTimer.Events = {
+  ['boom'] = love.audio.newSource('Assets/Audio/boom_quiet.wav', 'static'),
+  ['draw'] = love.audio.newSource('Assets/Audio/draw.wav', 'static'),
 }
 
 function CountdownTimer.ThreeTwoOneDraw()
-  return CountdownTimer.NewCountdownTimer(Countdown)
+  return CountdownTimer.NewCountdownTimer(CountdownDefinitions.ThreeTwoOneDraw)
 end
 
 function CountdownTimer.NewCountdownTimer(definition)
@@ -26,8 +26,8 @@ function CountdownTimer:reset()
   self.countingDown = true
 
   math.randomseed(self.seed)
-  self.frameDuration = math.random(1, 3)*0.1
-  self.step = math.random(1, 10)*10
+  self.frameDuration = math.random(3, 5)*10
+  self.step = math.random(3, 6)*10
 end
 
 function CountdownTimer:update(dt)
@@ -44,40 +44,58 @@ end
 
 function CountdownTimer:nextPosition()
   if self.currentDuration >= self.frameDuration then
-    self.nextPosition = self.nextPosition + 1
-    frame = self:currentFrame
-    if frame and frame.event then
-      self:handleEvent(frame.event)
-    end
+    self.position = self.position + 1
+    self.currentDuration = 0
+    self:handleEvent()
   end
 end
 
 function CountdownTimer:currentFrame()
-  self.timings[self.position]
+  return self.timings[self.position]
 end
 
 function CountdownTimer:checkCountingDown()
   if self.position > table.getn(self.timings) then
     self.countingDown = false
   end
+  return self.countingDown
 end
 
-function CountdownTimer:handleEvent(event)
-  action = CountdownTimer.Events[event]
+function CountdownTimer:handleEvent()
+  frame = self:currentFrame()
+  if not (frame and frame.event) then return end
+  action = CountdownTimer.Events[frame.event]
   if action then
-    print(action)
+    if action:isPlaying() then
+      action:seek(0)
+    else
+      action:play()
+    end
   else
-    LogUnhandledEvent('CountdownTimer', event)
+    LogUnhandledEvent('CountdownTimer', frame.event)
   end
 end
 
 function CountdownTimer:draw()
   if not self.countingDown then return end
+  frame = self:currentFrame()
 
-  for i = 1, i < self.position do
-    timing = self.timings[i]
-    love.graphics.setColor(timing.color)
-    love.graphics.draw(timing.image)
-    love.reset()
+  if frame.drawPrevious then
+    self:drawAllToFrame()
+  else
+    self:drawFrame(frame)
   end
+end
+
+function CountdownTimer:drawAllToFrame()
+  for i=1, self.position do
+    frame = self.timings[i]
+    self:drawFrame(frame)
+  end
+end
+
+function CountdownTimer:drawFrame(frame)
+ love.graphics.setColor(frame.color)
+ love.graphics.draw(frame.image)
+ love.graphics.reset()
 end
