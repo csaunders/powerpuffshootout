@@ -13,10 +13,7 @@ Assets = {
   },
   ['Graphics'] = {
     ['howToPlay'] = love.graphics.newImage('Assets/Art/placeholderInstructions.png'),
-    ['three'] = love.graphics.newImage('Assets/Art/3.png'),
-    ['two'] = love.graphics.newImage('Assets/Art/2.png'),
-    ['one'] = love.graphics.newImage('Assets/Art/1.png'),
-    ['draw'] = love.graphics.newImage('Assets/Art/draw.png'),
+    ['background'] = love.graphics.newImage('Assets/Art/background.png'),
     ['replay'] = love.graphics.newImage('Assets/Art/replay.png'),
   }
 }
@@ -40,7 +37,7 @@ player1 = nil
 player2 = nil
 message = nil
 
-dimmer = ScreenDimmer.NewScreenDimmer(2.0, 2, 255, 0, 0)
+dimmer = ScreenDimmer.NewScreenDimmer(2.0, 2, 0x00, 0x00, 0x00)
 countdown = CountdownTimer.ThreeTwoOneDraw()
 
 function love.load(arg)
@@ -92,6 +89,7 @@ function love.update(dt)
 end
 
 function love.draw()
+  love.graphics.draw(Assets.Graphics.background, 0, 0)
   killed = nil
   for i, player in pairs(players) do
     if Bullet.AnyKilling(player) then

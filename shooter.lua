@@ -18,7 +18,6 @@ Shooter = {
 Shooter.MAPPINGS = {
     ['a'] = 'shooting',
     ['x'] = 'dodging',
-    -- ['y'] = 'reloading'
 }
 Shooter.Assets = {
   ['Audio']           = {
@@ -29,8 +28,8 @@ Shooter.Assets = {
 }
 
 Shooter.DIMENSIONS = {
-  ['offsetX'] = 85,
-  ['offsetY'] = 128,
+  ['offsetX'] = 128,
+  ['offsetY'] = 160,
   ['width'] = 256,
   ['height'] = 256
 }
