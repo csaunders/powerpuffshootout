@@ -70,5 +70,6 @@ function LoopableSprite:draw(x, y, r, sx, sy, ox, oy)
   if self:didAnimationEnd() then return end
 
   frame = self:currentFrame()
-  love.graphics.draw(frame.image, x, y, r, sx, sy, ox, oy)
+  xoffset = frame.xoffset * sx
+  love.graphics.draw(frame.image, x+xoffset, y, r, sx, sy, ox, oy)
 end
