@@ -17,6 +17,7 @@ Assets = {
     ['howToPlay'] = love.graphics.newImage('Assets/Art/xbox_Controls.png'),
     ['background'] = love.graphics.newImage('Assets/Art/background.png'),
     ['replay'] = love.graphics.newImage('Assets/Art/xbox_menu.png'),
+    ['credits'] = love.graphics.newImage('Assets/Art/credits.png')
   }
 }
 Audio = {
@@ -184,6 +185,7 @@ function gameover(dt)
     elseif player.joystick:isGamepadDown('start') then
       currentGameState = 1
     elseif player.joystick:isGamepadDown('y') then
+      gameStateCounter = 0
       return true
     end
     if currentGameState < 4 then reset() end
@@ -192,9 +194,12 @@ function gameover(dt)
 end
 
 function credits(dt)
+  gameStateCounter = gameStateCounter + dt*500
+  if gameStateCounter < 1000 then return end
   controllersOn = false
   for i, player in pairs(players) do
-    if player.joystick:isGamepadDown('back') then
+    down = player.joystick:down()
+    if down('back') or down('a') or down('b') or down('x') or down('y') then
       currentGameState = 0
     elseif player.joystick:isGamepadDown('start') then
       currentGameState = 1
@@ -230,7 +235,7 @@ function DrawOverlay()
   elseif currentGameState == 4 then
     love.graphics.draw(Assets.Graphics.replay, 0, 0)
   elseif currentGameState == 5 then
-    love.graphics.rectangle('fill', 0, 0, 50, 50)
+    love.graphics.draw(Assets.Graphics.credits)
   end
   love.graphics.reset()
 end

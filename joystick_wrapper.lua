@@ -46,6 +46,12 @@ function JoystickWrapper:isGamepadDown(button)
   end
 end
 
+function JoystickWrapper:down()
+  return function(button)
+    return self:isGamepadDown(button)
+  end
+end
+
 function JoystickWrapper:isKeyboardPressed(button)
   key = self.mappings[button]
   return key and love.keyboard.isDown(key)
