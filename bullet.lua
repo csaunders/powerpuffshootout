@@ -9,7 +9,7 @@ Bullet.Assets = {
     ['Shot'] = love.audio.newSource('Assets/Audio/TOJAM2014 Gun2.mp3', 'static'),
     ['Ricochet'] = love.audio.newSource('Assets/Audio/ricochet.wav', 'static')
   },
-  ['Visual'] = {
+  ['Graphics'] = {
   }
 }
 
@@ -30,7 +30,7 @@ end
 
 function Bullet.placeLiveBullet(bullet)
   added = false
-  for i, bullet in pairs(Bullet.LiveBullets) do
+  for i, _ in pairs(Bullet.LiveBullets) do
     if not added and Bullet.LiveBullets[i] == nil then
       Bullet.LiveBullets[i] = bullet
       added = true
