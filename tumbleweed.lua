@@ -12,7 +12,7 @@ Tumbleweed.DeadTumbleweeds = {}
 
 function Tumbleweed.randomTumbleweed()
   if table.getn(Tumbleweed.LiveTumbleweeds) > 1 then return end
-  if math.random() > 0.25 then return end
+  if math.random() > 0.9 then return end
   direction = (math.random(1, 2) == 1) and 'left' or 'right'
   speed = 150
   Tumbleweed.placeTumbleweed(direction, speed)
@@ -71,7 +71,7 @@ function Tumbleweed:determineStartPoint()
     self.x = -self:getWidth()
   end
   self.offsetY = 0
-  self.y = love.graphics.getHeight() - self:getHeight()
+  self.y = love.graphics.getHeight() - self:getHeight()/2
 end
 
 function Tumbleweed:setSpeed(speed)
@@ -110,5 +110,5 @@ function Tumbleweed:update(dt)
 end
 
 function Tumbleweed:draw()
-  love.graphics.draw(Tumbleweed.Assets.Graphics.tumbleweed, self.x, self.y + self.offsetY, self.rotation, 2, 2, self:getWidth()/2, self:getHeight()/2)
+  love.graphics.draw(Tumbleweed.Assets.Graphics.tumbleweed, self.x, self.y + self.offsetY, self.rotation, 1, 1, self:getWidth()/2, self:getHeight()/2)
 end
