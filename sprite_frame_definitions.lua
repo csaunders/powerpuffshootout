@@ -47,7 +47,11 @@ SpriteFrameDefinitions.Princess1 = {
     },
     {
       ['image'] = 'Assets/Art/pixel anims/p2-dodge-2.png',
-      ['duration'] = 0.3,
+      ['duration'] = 0.1,
+    },
+    {
+      ['image'] = 'Assets/Art/pixel anims/p2-dodge-3.png',
+      ['duration'] = 0.2,
       ['event'] = 'dodgeDone',
     },
     {
