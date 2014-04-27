@@ -8,6 +8,11 @@ Assets = {
   ['Audio'] = {
     ['victory'] = love.audio.newSource('Assets/Audio/TOJam2014winnerrocktheme.mp3', 'stream'),
     ['theme']   = love.audio.newSource('Assets/Audio/TOJam2014westernstandoff.mp3', 'stream')
+  },
+  ['Graphics'] = {
+    ['howToPlay'] = love.graphics.newImage('Assets/Art/placeholderInstructions.png'),
+    ['ready'] = nil,
+    ['fight'] = nil
   }
 }
 Audio = {
@@ -19,6 +24,9 @@ Sprites = {
   ['Princess2'] = SpriteFrameDefinitions.Princess1,
 }
 playMusic = false
+controllersOn = false
+currentGameState = 1
+gameStateCounter = 0
 players = {}
 currentSong = nil
 bulletSpeed = 4800
@@ -46,11 +54,15 @@ function love.keypressed(k, u)
   if k == "escape" then
     love.event.quit()
   elseif k == "r" then
-    if anyoneDead() then reset() end
+    if anyoneDead() then
+      reset()
+      currentGameState = 1
+    end
   end
 end
 
 function love.update(dt)
+  updateCurrentGameState(dt)
   Bullet.UpdateBullets(dt)
   if anyoneDead() then
     setSong(Audio.victory)
@@ -71,7 +83,9 @@ function love.draw()
     end
     player:draw()
   end
+  love.graphics.print("Current: " .. currentGameState .. " Timer Value: " .. gameStateCounter, 10, 10)
   Bullet.DrawBullets()
+  DrawOverlay()
 end
 
 function grabJoysticks()
@@ -101,6 +115,35 @@ function reset()
   setSong(Audio.theme)
 end
 
+function updateCurrentGameState(dt)
+  -- action = 
+  if gameStates[currentGameState](dt) then
+    currentGameState = currentGameState + 1
+    gameStateCounter = 0
+  end
+end
+
+function gameOverlay(dt)
+  controllersOn = false
+  love.graphics.setColor(255, 0, 0)
+  gameStateCounter = gameStateCounter + dt*300
+  return gameStateCounter > 1000
+end
+
+function countDown(dt)
+  controllersOn = false
+  love.graphics.setColor(0, 255, 0)
+  gameStateCounter = gameStateCounter + dt*300
+  return gameStateCounter > 500
+end
+
+function play(dt)
+  controllersOn = true
+  return false
+end
+
+gameStates = {gameOverlay, countDown, play}
+
 function anyoneDead()
   for i, player in pairs(players) do
     if player:isDead() then return true end
@@ -115,6 +158,13 @@ function setSong(song)
   end
   currentSong = song
   currentSong:play()
+end
+
+function DrawOverlay()
+  if currentGameState == 1 then
+    love.graphics.draw(Assets.Graphics.howToPlay, 0, 0)
+  elseif currentGameState == 2 then
+  end
 end
 
 function IsWithinDelta(actual, expected, delta)

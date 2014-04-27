@@ -123,7 +123,7 @@ function Shooter:update(dt)
   if self.name == 'Stubbed' then return end
   self.previousState = self.state
 
-  if not self:isDead() then
+  if not self:isDead() and controllersOn then
     self:determineState(self.joystick)
   end
   self.sprite:update(dt)
