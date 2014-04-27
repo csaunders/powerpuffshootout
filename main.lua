@@ -102,7 +102,6 @@ function love.draw()
     if killed == player1 then p = player2 else p = player1 end
     p:setFreezeAnimation(true)
   end
-  love.graphics.print("Current: " .. currentGameState .. " Timer Value: " .. gameStateCounter, 10, 10)
   Bullet.DrawBullets()
   Tumbleweed.drawTumbleweeds()
   dimmer:draw()
@@ -125,8 +124,8 @@ end
 function initializePlayers(player1Joy, player2Joy)
   wrapper1 = JoystickWrapper.newJoystick(player1Joy, JoystickWrapper.Mappings.Player1)
   wrapper2 = JoystickWrapper.newJoystick(player2Joy, JoystickWrapper.Mappings.Player2)
-  player1 = Shooter.BuildShooter(Shooter.RIGHT, "Player 1", wrapper1, Sprites.Princess1)
-  player2 = Shooter.BuildShooter(Shooter.LEFT, "Player 2", wrapper2, Sprites.Princess2)
+  player2 = Shooter.BuildShooter(Shooter.LEFT, "player1", wrapper2, Sprites.Princess1)
+  player1 = Shooter.BuildShooter(Shooter.RIGHT, "player2", wrapper1, Sprites.Princess2)
   players = {player1, player2}
 end
 
