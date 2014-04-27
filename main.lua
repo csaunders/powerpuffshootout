@@ -23,7 +23,7 @@ Audio = {
 }
 Sprites = {
   ['Princess1'] = SpriteFrameDefinitions.Princess1,
-  ['Princess2'] = SpriteFrameDefinitions.Princess1,
+  ['Princess2'] = SpriteFrameDefinitions.Princess2,
 }
 gameDebug = false
 playMusic = true

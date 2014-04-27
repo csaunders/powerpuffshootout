@@ -85,7 +85,7 @@ SpriteFrameDefinitions.Princess2 = {
     },
     {
       ['image'] = 'Assets/Art/pixel anims/Chemo_Idle2.png',
-      ['duration'] = 0.3
+      ['duration'] = 0.3,
       ['next'] = 1,
     },
   },
@@ -99,7 +99,6 @@ SpriteFrameDefinitions.Princess2 = {
       ['image'] = 'Assets/Art/pixel anims/Chemo_Fire2.png',
       ['duration'] = 0.1,
       ['xoffset'] = 16,
-      ['event'] = 'fire',
     },
     {
       ['image'] = 'Assets/Art/pixel anims/Chemo_Fire3.png',
@@ -131,7 +130,7 @@ SpriteFrameDefinitions.Princess2 = {
     {
       ['image'] = 'Assets/Art/pixel anims/Chemo_Death.png',
       ['duration'] = 0.1,
-      ['next'] = 3
+      ['next'] = 2
     },
   },
 }
