@@ -98,7 +98,6 @@ SpriteFrameDefinitions.Princess2 = {
     {
       ['image'] = 'Assets/Art/pixel anims/Chemo_Fire2.png',
       ['duration'] = 0.1,
-      ['xoffset'] = 16,
     },
     {
       ['image'] = 'Assets/Art/pixel anims/Chemo_Fire3.png',
