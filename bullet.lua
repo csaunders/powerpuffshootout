@@ -10,14 +10,16 @@ Bullet.Assets = {
     ['Ricochet'] = love.audio.newSource('Assets/Audio/ricochet.wav', 'static')
   },
   ['Graphics'] = {
+    ['player2'] = love.graphics.newImage('Assets/Art/Chemo_Bullet.png'),
+    ['player1'] = love.graphics.newImage('Assets/Art/p2-bullet.png'),
   }
 }
 
 Bullet.LiveBullets = {}
 Bullet.DeadBullets = {}
 
-function Bullet.FireBullet(x, y, direction, speed)
-  bullet = Bullet.NewBullet(x, y)
+function Bullet.FireBullet(x, y, direction, speed, player)
+  bullet = Bullet.NewBullet(x, y, player)
   if direction == Bullet.LEFT then
     bullet.vx = -speed
     bullet.x = bullet.x - (bullet:getWidth() + 1)
@@ -59,8 +61,9 @@ function Bullet.AnyKilling(player)
   for i, bullet in pairs(Bullet.LiveBullets) do
     bx, by, bw, bh = bullet:bindingBox()
     colliding = CheckCollision(x,y,w,h,bx,by,bw,bh)
-    if colliding and not player:blocksImpact() then
+    if colliding and not player:dodgesImpact() then
       table.insert(Bullet.DeadBullets, bullet)
+      bullet.x = -100
       Bullet.LiveBullets[i] = nil
       return true
     end
@@ -74,7 +77,7 @@ function Bullet.DrawBullets()
   end
 end
 
-function Bullet.NewBullet(x, y)
+function Bullet.NewBullet(x, y, player)
   bullet = table.remove(Bullet.DeadBullets)
   if bullet == nil then
     bullet = setmetatable({}, Bullet)
@@ -84,6 +87,7 @@ function Bullet.NewBullet(x, y)
 
   bullet.x = x
   bullet.y = y
+  bullet.image = Bullet.Assets.Graphics[player]
   bullet.shot:stop()
   bullet.shot:play()
   return bullet
@@ -106,16 +110,17 @@ end
 
 function Bullet:draw()
   love.graphics.setColor(255, 255, 0)
-  love.graphics.rectangle('fill', self.x, self.y, self:getWidth(), self:getHeight())
+  scalex = self.vx > 0 and -1 or 1
+  love.graphics.draw(self.image, self.x, self.y, 0, scalex, 1)
   love.graphics.reset()
 end
 
 function Bullet:getWidth()
-  return 5
+  return self.image:getWidth()
 end
 
 function Bullet:getHeight()
-  return 5
+  return self.image:getWidth()
 end
 
 function Bullet:dead()

@@ -13,7 +13,8 @@ Shooter = {
   SHIELD_DOWN = math.pi/2,
   SHIELD_TIMING = 7.5,
   SHIELD_HOLD_TIME = 0.3,
-  PERFORMING = 8
+  PERFORMING = 8,
+  DODGING = 9
 }
 Shooter.MAPPINGS = {
     ['a'] = 'shooting',
@@ -94,6 +95,8 @@ function Shooter:eventHandler()
     elseif name == 'fire' then
       self.state = Shooter.SHOOTING
     elseif name == 'dodge' then
+      self.state = Shooter.DODGING
+    elseif name == 'block' then
       self.state = Shooter.BLOCKING
     elseif name == 'dodgeDone' then
       self.state = Shooter.PERFORMING
@@ -135,6 +138,14 @@ function Shooter:blocksImpact()
   return self.state == Shooter.BLOCKING
 end
 
+function Shooter:dodgesImpact()
+  return self.state == Shooter.DODGING
+end
+
+function Shooter:canDie()
+  return not self:blocksImpact() and not self:dodgesImpact()
+end
+
 function Shooter:isShooting()
   return self.state == Shooter.SHOOTING
 end
@@ -155,8 +166,7 @@ function Shooter:shoot(speed)
   self.state = Shooter.PERFORMING
   if self.bulletsLeft > 0 then
     gunX, gunY = self:gunPosition()
-    Bullet.FireBullet(gunX, gunY, self.facing, speed)
-    -- self.bulletsLeft = self.bulletsLeft - 1
+    Bullet.FireBullet(gunX, gunY, self.facing, speed, self.name)
   else
     Shooter.Assets.Audio.click:stop()
     Shooter.Assets.Audio.click:play()
@@ -180,8 +190,8 @@ end
 
 function Shooter:gunPosition()
   x, y, _, _, _, ox, oy = self:drawParams()
-  x = x - self.scalex*ox/2
-  return x, y - (oy/2 + 10)
+  x = x - (self.scalex*ox/2 + self.scalex*30)
+  return x, y - (oy/2 - 10)
 end
 
 function Shooter:drawParams()
