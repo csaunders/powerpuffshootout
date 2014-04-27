@@ -131,17 +131,17 @@ SpriteFrameDefinitions.Princess2 = {
   },
 ['dodging'] = {
     {
-      ['image'] = 'Assets/Art/pixel anims/Chemo_Block.png',
+      ['image'] = 'Assets/Art/pixel anims/Chemo_Block2.png',
       ['duration'] = 0.10,
       ['event'] = 'dodge'
     },
     {
-      ['image'] = 'Assets/Art/pixel anims/Chemo_Block2.png',
+      ['image'] = 'Assets/Art/pixel anims/Chemo_Block.png',
       ['duration'] = 0.3,
       ['event'] = 'dodgeDone',
     },
     {
-      ['image'] = 'Assets/Art/pixel anims/Chemo_Block.png',
+      ['image'] = 'Assets/Art/pixel anims/Chemo_Block2.png',
       ['duration'] = 0.15,
     }
   },
@@ -176,11 +176,11 @@ SpriteFrameDefinitions.Princess2 = {
 ['taunt'] = {
     {
       ['image'] = 'Assets/Art/pixel anims/Chemo_Taunt1.png',
-      ['duration'] = 0.08,
+      ['duration'] = 0.1,
     },
     {
       ['image'] = 'Assets/Art/pixel anims/Chemo_Taunt2.png',
-      ['duration'] = 0.08,
+      ['duration'] = 0.1,
     },
   }
 }
