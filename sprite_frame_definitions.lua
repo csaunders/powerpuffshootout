@@ -90,6 +90,15 @@ SpriteFrameDefinitions.Princess1 = {
       ['next'] = 6
     },
   },
+  ['taunt'] = {
+    {
+      ['image'] = 'Assets/Art/pixel anims/p2-taunt-1.png',
+      ['duration'] = 0.08,
+    },
+    {
+      ['image'] = 'Assets/Art/pixel anims/p2-taunt-2.png',
+      ['duration'] = 0.08,
+    },
 }
 
 SpriteFrameDefinitions.Princess2 = {
@@ -161,6 +170,16 @@ SpriteFrameDefinitions.Princess2 = {
       ['image'] = 'Assets/Art/pixel anims/Chemo_Death5.png',
       ['duration'] = 0.1,
       ['next'] = 6
+    },
+  }
+['taunt'] = {
+    {
+      ['image'] = 'Assets/Art/pixel anims/Chemo_Taunt1.png',
+      ['duration'] = 0.08,
+    },
+    {
+      ['image'] = 'Assets/Art/pixel anims/Chemo_Taunt2.png',
+      ['duration'] = 0.08,
     },
   },
 }
