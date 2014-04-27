@@ -3,7 +3,7 @@ function love.conf(t)
     t.version = "0.9.1"                -- The LÖVE version this game was made for (string)
     t.console = false                  -- Attach a console (boolean, Windows only)
 
-    t.window.title = "Powerpuff Shootout v0.0.1"        -- The window title (string)
+    t.window.title = "Pride & Pistols v0.0.1"        -- The window title (string)
     t.window.icon = "Assets/Art/gameIconPlaceholder.png"               -- Filepath to an image to use as the window's icon (string)
     t.window.width = 1024               -- The window width (number)
     t.window.height = 576              -- The window height (number)
