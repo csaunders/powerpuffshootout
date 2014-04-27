@@ -23,9 +23,9 @@ Shooter.MAPPINGS = {
 }
 Shooter.Assets = {
   ['Audio']           = {
-    ['click']         = love.audio.newSource('Assets/Audio/EmptyClick.wav', 'static'),
-    ['death']         = love.audio.newSource('Assets/Audio/TOJAM2014 GunEcho2.mp3', 'static'),
-    ['deathScream']   = love.audio.newSource('Assets/Audio/deathScream.wav', 'static')
+    ['click']         = love.audio.newSource('/Assets/Audio/EmptyClick.wav', 'static'),
+    ['death']         = love.audio.newSource('/Assets/Audio/TOJAM2014 GunEcho2.mp3', 'static'),
+    ['deathScream']   = love.audio.newSource('/Assets/Audio/deathScream.wav', 'static')
   }
 }
 

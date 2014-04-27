@@ -2,8 +2,8 @@ require('countdown_definitions')
 CountdownTimer = {}
 CountdownTimer.__index = CountdownTimer
 CountdownTimer.Events = {
-  ['boom'] = love.audio.newSource('Assets/Audio/boom_quiet.wav', 'static'),
-  ['draw'] = love.audio.newSource('Assets/Audio/draw.wav', 'static'),
+  ['boom'] = love.audio.newSource('/Assets/Audio/boom_quiet.wav', 'static'),
+  ['draw'] = love.audio.newSource('/Assets/Audio/draw.wav', 'static'),
 }
 
 function CountdownTimer.ThreeTwoOneDraw()

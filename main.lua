@@ -10,14 +10,14 @@ require('tumbleweed')
 minRequiredJoysticks = 2
 Assets = {
   ['Audio'] = {
-    ['victory'] = love.audio.newSource('Assets/Audio/TOJam2014winnerrocktheme.mp3', 'stream'),
-    ['theme']   = love.audio.newSource('Assets/Audio/TOJam2014westernstandoff.mp3', 'stream')
+    ['victory'] = love.audio.newSource('/Assets/Audio/TOJam2014winnerrocktheme.mp3', 'stream'),
+    ['theme']   = love.audio.newSource('/Assets/Audio/TOJam2014westernstandoff.mp3', 'stream')
   },
   ['Graphics'] = {
-    ['howToPlay'] = love.graphics.newImage('Assets/Art/xbox_Controls.png'),
-    ['background'] = love.graphics.newImage('Assets/Art/background.png'),
-    ['replay'] = love.graphics.newImage('Assets/Art/xbox_menu.png'),
-    ['credits'] = love.graphics.newImage('Assets/Art/credits.png')
+    ['howToPlay'] = love.graphics.newImage('/Assets/Art/xbox_Controls.png'),
+    ['background'] = love.graphics.newImage('/Assets/Art/background.png'),
+    ['replay'] = love.graphics.newImage('/Assets/Art/xbox_menu.png'),
+    ['credits'] = love.graphics.newImage('/Assets/Art/credits.png')
   }
 }
 Audio = {
@@ -31,7 +31,7 @@ Sprites = {
 gameDebug = false
 playMusic = true
 controllersOn = false
-currentGameState = 4
+currentGameState = 1
 gameStateCounter = 0
 identificationTiming = 0
 players = {}

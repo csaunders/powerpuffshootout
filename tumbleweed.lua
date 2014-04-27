@@ -3,7 +3,7 @@ Tumbleweed.__index = Tumbleweed
 
 Tumbleweed.Assets = {
   ['Graphics'] = {
-    ['tumbleweed'] = love.graphics.newImage('Assets/Art/tumbleweed.png')
+    ['tumbleweed'] = love.graphics.newImage('/Assets/Art/tumbleweed.png')
   }
 }
 

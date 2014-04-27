@@ -6,12 +6,12 @@ Bullet.__index = Bullet
 
 Bullet.Assets = {
   ['Audio'] = {
-    ['Shot'] = love.audio.newSource('Assets/Audio/TOJAM2014 Gun2.mp3', 'static'),
-    ['Ricochet'] = love.audio.newSource('Assets/Audio/ricochet.wav', 'static')
+    ['Shot'] = love.audio.newSource('/Assets/Audio/TOJAM2014 Gun2.mp3', 'static'),
+    ['Ricochet'] = love.audio.newSource('/Assets/Audio/ricochet.wav', 'static')
   },
   ['Graphics'] = {
-    ['player2'] = love.graphics.newImage('Assets/Art/Chemo_Bullet.png'),
-    ['player1'] = love.graphics.newImage('Assets/Art/p2-bullet.png'),
+    ['player2'] = love.graphics.newImage('/Assets/Art/Chemo_Bullet.png'),
+    ['player1'] = love.graphics.newImage('/Assets/Art/p2-bullet.png'),
   }
 }
 

@@ -4,7 +4,7 @@ function love.conf(t)
     t.console = false                  -- Attach a console (boolean, Windows only)
 
     t.window.title = "Pride & Pistols v0.0.1"        -- The window title (string)
-    t.window.icon = "Assets/Art/gameIconPlaceholder.png"               -- Filepath to an image to use as the window's icon (string)
+    t.window.icon = "/Assets/Art/gameIconPlaceholder.png"               -- Filepath to an image to use as the window's icon (string)
     t.window.width = 1024               -- The window width (number)
     t.window.height = 576              -- The window height (number)
     t.window.borderless = false        -- Remove all border visuals from the window (boolean)
