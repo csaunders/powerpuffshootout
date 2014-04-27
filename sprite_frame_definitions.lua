@@ -138,7 +138,7 @@ SpriteFrameDefinitions.Princess2 = {
       ['duration'] = 0.1,
     },
     {
-      ['image'] = 'Assets/Art/pixel anims/pChemoDeath2.png',
+      ['image'] = 'Assets/Art/pixel anims/ChemoDeath2.png',
       ['duration'] = 0.15,
     },
     {
