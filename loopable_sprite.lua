@@ -7,22 +7,39 @@ function LoopableSprite.NewSprite(definition, callback)
   for name, frames in pairs(definition) do
     self.states[name] = SpriteFrame.InitializeFrames(frames)
   end
-  self.callback = callback
+  self:setCallback(callback)
   return self
 end
 
+function LoopableSprite:dimensions()
+  -- Ghetto: we assume all frames have the same dimensions
+  -- Ghetto: we also assume that all sprites have an idle state
+  firstFrame = self.states['idle'][1]
+  return firstFrame:getWidth(), firstFrame:getHeight()
+end
+
+function LoopableSprite:setCallback(callback)
+  self.callback = callback
+end
+
 function LoopableSprite:setState(name)
+  if not self.states[name] then return end
   self.frames = self.states[name]
   self.currentIndex = 1
   self.currentDuration = 0
 end
 
 function LoopableSprite:update(dt)
+  if self:didAnimationEnd() then return end
+
   self.currentDuration = self.currentDuration + dt
   frame = self:currentFrame()
   if frame:didFrameEnd(self.currentDuration) then
     self:fireEvent(frame.event)
     self:nextFrame(frame.nextFrame)
+    if self:didAnimationEnd() then
+      self:fireEvent('animationEnd')
+    end
   end
 end
 
@@ -49,10 +66,9 @@ function LoopableSprite:fireEvent(name)
 end
 
 function LoopableSprite:draw(x, y, r, sx, sy, ox, oy)
+  if self:didAnimationEnd() then return end
+
   frame = self:currentFrame()
-  if not frame then
-    print("frame is nil!!!")
-  end
   love.graphics.draw(frame.image, x, y, r, sx, sy, ox, oy)
 end
 
@@ -75,6 +91,14 @@ function SpriteFrame.NewFrame(definition)
   self.event = definition.event
   self.nextFrame = definition.next
   return self
+end
+
+function SpriteFrame:getWidth()
+  return self.image:getWidth()
+end
+
+function SpriteFrame:getHeight()
+  return self.image:getHeight()
 end
 
 function SpriteFrame:didFrameEnd(duration)

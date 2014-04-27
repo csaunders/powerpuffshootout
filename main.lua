@@ -14,23 +14,20 @@ Audio = {
   ['victory'] = CleanLoopableSong.NewSong(0,9.047,32.026,Assets.Audio.victory),
   ['theme']   = CleanLoopableSong.NewSong(0,16.069,64.092,Assets.Audio.theme),
 }
+Sprites = {
+  ['Princess1'] = SpriteFrameDefinitions.Princess1,
+  ['Princess2'] = SpriteFrameDefinitions.Princess1,
+}
 playMusic = false
 players = {}
 currentSong = nil
-bulletSpeed = 3000
+bulletSpeed = 4800
 player1 = nil
 player2 = nil
 message = nil
 
 function love.load(arg)
   if arg[#arg] == "-debug" then require("mobdebug").start() end
-
-  callback = function(name)
-    if not name then return end
-    print("Just got the event: " .. name)
-  end
-  test = LoopableSprite.NewSprite(SpriteFrameDefinitions.Princess1, callback)
-  test:setState('dodging')
 
   setSong(Audio.theme)
   count = love.joystick.getJoystickCount()
@@ -54,8 +51,6 @@ function love.keypressed(k, u)
 end
 
 function love.update(dt)
-  currentSong:update()
-  test:update(dt)
   Bullet.UpdateBullets(dt)
   if anyoneDead() then
     setSong(Audio.victory)
@@ -70,7 +65,6 @@ function love.update(dt)
 end
 
 function love.draw()
-  test:draw(300, 200, 0, 1, 1, 200, 200)
   for i, player in pairs(players) do
     if Bullet.AnyKilling(player) then
       player:kill()
@@ -78,7 +72,6 @@ function love.draw()
     player:draw()
   end
   Bullet.DrawBullets()
-  love.graphics.print(message, 400, 300)
 end
 
 function grabJoysticks()
@@ -87,11 +80,11 @@ function grabJoysticks()
   joysticks = love.joystick.getJoysticks()
   for i, joystick in pairs(joysticks) do
     if not player1 then
-      player1 = Shooter.BuildShooter(Shooter.LEFT, "Player1", joystick)
+      player1 = Shooter.BuildShooter(Shooter.LEFT, "Player 2", joystick, Sprites.Princess1)
     elseif not player2 then
       guid = joystick:getID()
       if player1.joystick:getID() ~= guid then
-        player2 = Shooter.BuildShooter(Shooter.RIGHT, "Player1", joystick)
+        player2 = Shooter.BuildShooter(Shooter.RIGHT, "Player 2", joystick, Sprites.Princess2)
       end
     else
       break

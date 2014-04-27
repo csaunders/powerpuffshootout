@@ -1,4 +1,5 @@
 require('bullet')
+require('loopable_sprite')
 Shooter = {
   IDLE = 1,
   BLOCKING = 2,
@@ -12,11 +13,12 @@ Shooter = {
   SHIELD_DOWN = math.pi/2,
   SHIELD_TIMING = 7.5,
   SHIELD_HOLD_TIME = 0.3,
+  PERFORMING = 8,
 }
 Shooter.MAPPINGS = {
-    ['a'] = Shooter.SHOOTING,
-    ['x'] = Shooter.BLOCKING,
-    ['y'] = Shooter.RELOADING
+    ['a'] = 'shooting',
+    ['x'] = 'dodging',
+    ['y'] = 'reloading'
 }
 Shooter.Assets = {
   [Shooter.IDLE]      = love.graphics.newImage('Assets/Art/placeholderIdle.png'),
@@ -32,33 +34,35 @@ Shooter.Assets = {
 }
 
 Shooter.DIMENSIONS = {
-  ['offsetX'] = Shooter.Assets[Shooter.IDLE]:getWidth()/3,
-  ['offsetY'] = Shooter.Assets[Shooter.IDLE]:getHeight()/2,
-  ['width'] = Shooter.Assets[Shooter.IDLE]:getWidth(),
-  ['height'] = Shooter.Assets[Shooter.IDLE]:getHeight()
+  ['offsetX'] = 85,
+  ['offsetY'] = 128,
+  ['width'] = 256,
+  ['height'] = 256
 }
 Shooter.__index = Shooter
 
-function Shooter.BuildShooter(facing, name, joystick)
-  local width = love.graphics.getWidth()
-  local height = love.graphics.getHeight()
+function Shooter.BuildShooter(facing, name, joystick, definition)
+  local sprite = LoopableSprite.NewSprite(definition)
+  local screenWidth, screenHeight = love.graphics.getWidth(), love.graphics.getHeight()
+  local width, height = sprite:dimensions()
   if facing == Shooter.RIGHT then
     x = Shooter.DIMENSIONS.offsetX
   else
-    x = width - (Shooter.DIMENSIONS.offsetX)
+    x = screenWidth - (Shooter.DIMENSIONS.offsetX)
   end
-  y = height - Shooter.DIMENSIONS.offsetY
-  return Shooter.NewShooter(x, y, joystick, facing, name or 'Stubbed')
+  y = screenHeight - Shooter.DIMENSIONS.offsetY
+  return Shooter.NewShooter(x, y, joystick, facing, name or 'Stubbed', sprite)
 end
 
-function Shooter.NewShooter(x, y, joystick, facing, name)
+function Shooter.NewShooter(x, y, joystick, facing, name, sprite)
   local self = setmetatable({}, Shooter)
-  self:clearState()
 
   self.position = {
     ['x'] = x, ['y'] = y,
     ['handX'] = 0, ['handY'] = 0
   }
+  self.sprite = sprite
+  self.sprite:setCallback(self:eventHandler())
   self.joystick = joystick
   self.facing = facing
   self.name = name
@@ -68,26 +72,43 @@ function Shooter.NewShooter(x, y, joystick, facing, name)
     self.scalex = -1
   end
 
+  self:clearState()
   return self
 end
 
 function Shooter:determineState(joystick)
-  prospective_states = {}
+  if joystick:isGamepadDown('b') then
+    Shooter.Assets.Audio.click:stop()
+    Shooter.Assets.Audio.click:play()
+  end
+  if self.state ~= Shooter.IDLE then return end
+
   for key, state in pairs(Shooter.MAPPINGS) do
     if joystick:isGamepadDown(key) then
-      table.insert(prospective_states, state)
+      self.sprite:setState(state)
+      self.state = Shooter.PERFORMING
+      break
     end
   end
-  if table.getn(prospective_states) == 1 then
-    return table.remove(prospective_states)
-  elseif table.getn(prospective_states) == 0 then
-    return Shooter.IDLE
-  else
-    return self.state
+end
+
+function Shooter:eventHandler()
+  return function(name)
+    if name == 'animationEnd' then
+      self.sprite:setState('idle')
+      self.state = Shooter.IDLE
+    elseif name == 'fire' then
+      self.state = Shooter.SHOOTING
+    elseif name == 'dodge' then
+      self.state = Shooter.BLOCKING
+    elseif name == 'dodgeDone' then
+      self.state = Shooter.PERFORMING
+    end
   end
 end
 
 function Shooter:clearState()
+  self.sprite:setState('idle')
   self.state = Shooter.IDLE
   self.bulletsLeft = Shooter.BULLET_CAP
   self.shieldRotation = Shooter.SHIELD_DOWN
@@ -103,68 +124,33 @@ function Shooter:update(dt)
   self.previousState = self.state
 
   if not self:isDead() then
-    self.state = self:determineState(self.joystick)
+    self:determineState(self.joystick)
   end
-
-  if self:isBlocking() then
-    self.shieldRotation = math.max(self.shieldRotation - Shooter.SHIELD_TIMING*dt, Shooter.SHIELD_UP)
-  else
-    self.shieldRotation = math.min(self.shieldRotation + Shooter.SHIELD_TIMING*dt, Shooter.SHIELD_DOWN)
-  end
-
-  self:pullShieldDown(dt)
-  self:reload()
-end
-
-function Shooter:pullShieldDown(dt)
-  if self.state == Shooter.BLOCKING then
-    self.shieldHeldDuration = self.shieldHeldDuration + dt
-  end
-  if not self.pullingShieldDown and self.shieldHeldDuration >= Shooter.SHIELD_HOLD_TIME then
-    self:setPullingShieldDown(true)
-  elseif self.shieldRotation >= Shooter.SHIELD_DOWN then
-    if self.state ~= Shooter.BLOCKING then
-      self:setPullingShieldDown(false)
-    end
-  end
-end
-
-function Shooter:setPullingShieldDown(value)
-  if value == false then
-    self.shieldHeldDuration = 0
-  end
-  self.pullingShieldDown = value
-end
-
-function Shooter:isMatchingState()
-  return self.previousState == self.state
-end
-
-function Shooter:isReloading()
-  return not self:isMatchingState() and self.state == Shooter.RELOADING
-end
-
-function Shooter:isBlocking()
-  return self.state == Shooter.BLOCKING and not self.pullingShieldDown
+  self.sprite:update(dt)
 end
 
 function Shooter:blocksImpact()
-  return self:isBlocking() and IsWithinDelta(self.shieldRotation, Shooter.SHIELD_UP, 0.2)
+  return self.state == Shooter.BLOCKING
 end
 
 function Shooter:isShooting()
-  return not self:isMatchingState() and self.state == Shooter.SHOOTING
+  return self.state == Shooter.SHOOTING
 end
 
 function Shooter:isDead()
   return self.state == Shooter.DEAD
 end
 
-function Shooter:isShieldDown()
-  return self.shieldRotation == Shooter.SHIELD_DOWN
+function Shooter:isPerforming()
+  return self.state == Shooter.PERFORMING
+end
+
+function Shooter:cannotAct()
+  return self:isDead() or self:isPerforming()
 end
 
 function Shooter:shoot(speed)
+  self.state = Shooter.PERFORMING
   if self.bulletsLeft > 0 then
     gunX, gunY = self:gunPosition()
     Bullet.FireBullet(gunX, gunY, self.facing, speed)
@@ -196,40 +182,24 @@ end
 function Shooter:drawParams()
   x, y = self.position.x, self.position.y
   r, sx, sy = 0, self.scalex, 1
-  ox, oy = Shooter.DIMENSIONS.width / 2, Shooter.DIMENSIONS.height / 2
+  ox, oy = self.sprite:dimensions()
+  ox, oy = ox/2, oy/2
   return  x, y, r, sx, sy, ox, oy
 end
 
 function Shooter:bindingBox()
   x, y, _, _, _, ox, oy = self:drawParams()
-  if self.facing == Shooter.RIGHT then
-    x = x - ox
-  end
-  return x, (y - oy), Shooter.DIMENSIONS.width/2, Shooter.DIMENSIONS.height
+  return x - ox/2, (y - oy), Shooter.DIMENSIONS.width/2, Shooter.DIMENSIONS.height
 end
 
 function Shooter:drawSprite()
-  love.graphics.draw(self.sprite, self:drawParams())
-end
-
-function Shooter:drawShield()
-  if self:isShieldDown() then return end
-  x, y, _, scalex, scaley, ox, oy = self:drawParams()
-  rot = self.shieldRotation
-  if self.facing == Shooter.LEFT then
-    rot = -rot
-    scalex = 1
-  end
-  love.graphics.draw(Shooter.Assets.shield, x, y, rot, scalex, scaley, ox, oy)
+  self.sprite:draw(self:drawParams())
 end
 
 function Shooter:draw()
-  self:setSprite()
-  self:drawSprite()
-  self:drawShield()
-  love.graphics.print("Shield Held Duration:" .. self.shieldHeldDuration .. 's', self.position.x, 200)
   love.graphics.rectangle('line', self:bindingBox())
-  -- love.graphics.rectangle('line', self.position.x, self.position.y, 20, 20)
-  love.graphics.print(self.name .. ' shield rot ' .. self.shieldRotation, self.position.x - 100, self.position.y - 30)
+  if self.state == Shooter.DEAD then love.graphics.setColor(255, 0, 0) end
+  self:drawSprite()
+  love.graphics.print('Bullets ' .. self.bulletsLeft, self.position.x - 100, self.position.y - 30)
   love.graphics.reset()
 end

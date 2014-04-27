@@ -56,10 +56,10 @@ function Bullet.AnyKilling(player)
   for i, bullet in pairs(Bullet.LiveBullets) do
     bx, by, bw, bh = bullet:bindingBox()
     colliding = CheckCollision(x,y,w,h,bx,by,bw,bh)
-    if colliding then
+    if colliding and not player:blocksImpact() then
       table.insert(Bullet.DeadBullets, bullet)
       Bullet.LiveBullets[i] = nil
-      return not player:blocksImpact()
+      return true
     end
   end
   return false

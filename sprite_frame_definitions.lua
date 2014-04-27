@@ -32,24 +32,22 @@ SpriteFrameDefinitions.Princess1 = {
     {
       ['image'] = 'Assets/Art/pixel anims/p2-fire-3.png',
       ['duration'] = 0.5,
-      ['next'] = 1,
     }
   },
 ['dodging'] = {
     {
       ['image'] = 'Assets/Art/pixel anims/p2-dodge-1.png',
       ['duration'] = 0.15,
+      ['event'] = 'dodge'
     },
     {
       ['image'] = 'Assets/Art/pixel anims/p2-dodge-2.png',
       ['duration'] = 0.3,
-      ['event'] = 'dodge',
+      ['event'] = 'dodgeDone',
     },
     {
       ['image'] = 'Assets/Art/pixel anims/p2-dodge-3.png',
       ['duration'] = 0.15,
-      ['event'] = 'dodgeDone',
-      ['next'] = 1
     }
   },
 }
