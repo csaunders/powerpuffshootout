@@ -118,14 +118,12 @@ function Shooter:update(dt)
     self:determineState(self.joystick)
   end
   if self.freezeAnimation then message = 'yes' else message = 'no' end
-  print(self.name .. ' - freeze? ' .. message)
   if not self.freezeAnimation then
     self.sprite:update(dt)
   end
 end
 
 function Shooter:setFreezeAnimation(freeze)
-  print('setting freeze for ' .. self.name)
   self.freezeAnimation = freeze
 end
 

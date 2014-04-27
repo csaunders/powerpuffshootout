@@ -2,6 +2,7 @@ require('shooter')
 require('clean_loopable_song')
 require('loopable_sprite')
 require('sprite_frame_definitions')
+require('screen_dimmer')
 
 minRequiredJoysticks = 2
 Assets = {
@@ -28,6 +29,7 @@ Sprites = {
 }
 playMusic = true
 controllersOn = false
+dimmer = ScreenDimmer.NewScreenDimmer(2.0, 2, 255, 0, 0)
 currentGameState = 3
 gameStateCounter = 0
 players = {}
@@ -61,11 +63,14 @@ function love.keypressed(k, u)
       reset()
       currentGameState = 1
     end
+  elseif k == "0" then
+    dimmer:setDimming(true)
   end
 end
 
 function love.update(dt)
   updateCurrentGameState(dt)
+  dimmer:update(dt)
   Bullet.UpdateBullets(dt)
   if anyoneDead() then
     setSong(Audio.victory)
@@ -86,6 +91,7 @@ function love.draw()
       killed = player
       currentSong:stop()
       player:kill()
+      dimmer:setDimming(true)
       Bullet.ClearBullets()
     end
     player:draw()
@@ -96,6 +102,7 @@ function love.draw()
   end
   love.graphics.print("Current: " .. currentGameState .. " Timer Value: " .. gameStateCounter, 10, 10)
   Bullet.DrawBullets()
+  dimmer:draw()
   DrawOverlay()
 end
 
@@ -120,6 +127,7 @@ function grabJoysticks()
 end
 
 function reset()
+  dimmer:reset()
   for i, player in pairs(players) do
     player:clearState()
   end
