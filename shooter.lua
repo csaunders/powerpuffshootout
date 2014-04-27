@@ -21,12 +21,6 @@ Shooter.MAPPINGS = {
     -- ['y'] = 'reloading'
 }
 Shooter.Assets = {
-  [Shooter.IDLE]      = love.graphics.newImage('Assets/Art/placeholderIdle.png'),
-  [Shooter.BLOCKING]  = love.graphics.newImage('Assets/Art/placeholderShielding.png'),
-  [Shooter.SHOOTING]  = love.graphics.newImage('Assets/Art/placeholderFire.png'),
-  [Shooter.RELOADING] = love.graphics.newImage('Assets/Art/placeholderIdle.png'),
-  [Shooter.DEAD]      = love.graphics.newImage('Assets/Art/placeholderDead.png'),
-  ['shield']          = love.graphics.newImage('Assets/Art/placeholderShield.png'),
   ['Audio']           = {
     ['click']         = love.audio.newSource('Assets/Audio/EmptyClick.wav', 'static'),
     ['death']         = love.audio.newSource('Assets/Audio/TOJAM2014 GunEcho2.mp3', 'static'),
@@ -110,13 +104,10 @@ end
 function Shooter:clearState()
   self.sprite:setState('idle')
   self.state = Shooter.IDLE
+  self.freezeAnimation = false
   self.bulletsLeft = Shooter.BULLET_CAP
   self.shieldRotation = Shooter.SHIELD_DOWN
   self.shieldHeldDuration = 0.0
-end
-
-function Shooter:setSprite()
-  self.sprite = Shooter.Assets[self.state]
 end
 
 function Shooter:update(dt)
@@ -126,7 +117,16 @@ function Shooter:update(dt)
   if not self:isDead() and controllersOn then
     self:determineState(self.joystick)
   end
-  self.sprite:update(dt)
+  if self.freezeAnimation then message = 'yes' else message = 'no' end
+  print(self.name .. ' - freeze? ' .. message)
+  if not self.freezeAnimation then
+    self.sprite:update(dt)
+  end
+end
+
+function Shooter:setFreezeAnimation(freeze)
+  print('setting freeze for ' .. self.name)
+  self.freezeAnimation = freeze
 end
 
 function Shooter:blocksImpact()

@@ -80,13 +80,19 @@ function love.update(dt)
 end
 
 function love.draw()
+  killed = nil
   for i, player in pairs(players) do
     if Bullet.AnyKilling(player) then
+      killed = player
       currentSong:stop()
       player:kill()
       Bullet.ClearBullets()
     end
     player:draw()
+  end
+  if killed then
+    if killed == player1 then p = player2 else p = player1 end
+    p:setFreezeAnimation(true)
   end
   love.graphics.print("Current: " .. currentGameState .. " Timer Value: " .. gameStateCounter, 10, 10)
   Bullet.DrawBullets()

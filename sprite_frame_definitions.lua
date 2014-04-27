@@ -53,21 +53,17 @@ SpriteFrameDefinitions.Princess1 = {
   ['death'] = {
     {
       ['image'] = 'Assets/Art/pixel anims/p2-dodge-1.png',
-      ['duration'] = 0.0,
+      ['duration'] = 0.2,
     },
     {
-      ['image'] = 'Assets/Art/pixel anims/p2-dodge-2.png',
-      ['duration'] = 0.0,
+      ['image'] = 'Assets/Art/pixel anims/p2-death-1.png',
+      ['duration'] = 2.245,
+      ['event'] = 'doneDeath',
     },
     {
-      ['image'] = 'Assets/Art/pixel anims/p2-dodge-3.png',
-      ['duration'] = 2.445,
-      ['event'] = 'doneDeath'
+      ['image'] = 'Assets/Art/pixel anims/p2-death-1.png',
+      ['duration'] = 0.1,
+      ['next'] = 3
     },
-    {
-      ['image'] = 'Assets/Art/pixel anims/p2-dodge-3.png',
-      ['duration'] = 0.01,
-      ['next'] = 4
-    }
   },
 }
