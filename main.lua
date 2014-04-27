@@ -11,8 +11,11 @@ Assets = {
   },
   ['Graphics'] = {
     ['howToPlay'] = love.graphics.newImage('Assets/Art/placeholderInstructions.png'),
-    ['ready'] = nil,
-    ['fight'] = nil
+    ['three'] = love.graphics.newImage('Assets/Art/3.png'),
+    ['two'] = love.graphics.newImage('Assets/Art/2.png'),
+    ['one'] = love.graphics.newImage('Assets/Art/1.png'),
+    ['draw'] = love.graphics.newImage('Assets/Art/draw.png'),
+    ['replay'] = love.graphics.newImage('Assets/Art/replay.png'),
   }
 }
 Audio = {
@@ -25,7 +28,7 @@ Sprites = {
 }
 playMusic = false
 controllersOn = false
-currentGameState = 1
+currentGameState = 3
 gameStateCounter = 0
 players = {}
 currentSong = nil
@@ -94,11 +97,11 @@ function grabJoysticks()
   joysticks = love.joystick.getJoysticks()
   for i, joystick in pairs(joysticks) do
     if not player1 then
-      player1 = Shooter.BuildShooter(Shooter.LEFT, "Player 2", joystick, Sprites.Princess1)
+      player1 = Shooter.BuildShooter(Shooter.RIGHT, "Player 1", joystick, Sprites.Princess1)
     elseif not player2 then
       guid = joystick:getID()
       if player1.joystick:getID() ~= guid then
-        player2 = Shooter.BuildShooter(Shooter.RIGHT, "Player 2", joystick, Sprites.Princess2)
+        player2 = Shooter.BuildShooter(Shooter.LEFT, "Player 2", joystick, Sprites.Princess2)
       end
     else
       break
@@ -116,7 +119,6 @@ function reset()
 end
 
 function updateCurrentGameState(dt)
-  -- action = 
   if gameStates[currentGameState](dt) then
     currentGameState = currentGameState + 1
     gameStateCounter = 0
@@ -125,24 +127,36 @@ end
 
 function gameOverlay(dt)
   controllersOn = false
-  love.graphics.setColor(255, 0, 0)
   gameStateCounter = gameStateCounter + dt*300
   return gameStateCounter > 1000
 end
 
 function countDown(dt)
   controllersOn = false
-  love.graphics.setColor(0, 255, 0)
   gameStateCounter = gameStateCounter + dt*300
   return gameStateCounter > 500
 end
 
 function play(dt)
   controllersOn = true
-  return false
+  return anyoneDead()
 end
 
-gameStates = {gameOverlay, countDown, play}
+function gameover(dt)
+  controllersOn = false
+  joys = love.joystick.getJoysticks()
+  for i, joy in pairs(joys) do
+    if joy:isGamepadDown('back') then
+      currentGameState = 0
+    elseif joy:isGamepadDown('start') then
+      currentGameState = 1
+    end
+    if currentGameState ~= 4 then reset() end
+  end
+  return currentGameState ~= 4
+end
+
+gameStates = {gameOverlay, countDown, play, gameover}
 
 function anyoneDead()
   for i, player in pairs(players) do
@@ -164,7 +178,26 @@ function DrawOverlay()
   if currentGameState == 1 then
     love.graphics.draw(Assets.Graphics.howToPlay, 0, 0)
   elseif currentGameState == 2 then
+    if gameStateCounter > 0 and gameStateCounter < 375 then
+      love.graphics.setColor(255, 0, 0)
+      love.graphics.draw(Assets.Graphics.three, 0, 0)
+    end
+    if gameStateCounter > 125 and gameStateCounter < 375 then
+      love.graphics.setColor(0, 255, 0)
+      love.graphics.draw(Assets.Graphics.two, 0, 0)
+    end
+    if gameStateCounter > 250 and gameStateCounter < 375 then
+      love.graphics.setColor(0, 0, 255)
+      love.graphics.draw(Assets.Graphics.one, 0, 0)
+    end
+    if gameStateCounter > 375 then
+      love.graphics.setColor(255, 255, 255)
+      love.graphics.draw(Assets.Graphics.draw, 0, 0)
+    end
+  elseif currentGameState == 4 then
+    love.graphics.draw(Assets.Graphics.replay, 0, 0)
   end
+  love.graphics.reset()
 end
 
 function IsWithinDelta(actual, expected, delta)

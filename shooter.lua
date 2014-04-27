@@ -18,7 +18,7 @@ Shooter = {
 Shooter.MAPPINGS = {
     ['a'] = 'shooting',
     ['x'] = 'dodging',
-    ['y'] = 'reloading'
+    -- ['y'] = 'reloading'
 }
 Shooter.Assets = {
   [Shooter.IDLE]      = love.graphics.newImage('Assets/Art/placeholderIdle.png'),
@@ -77,10 +77,6 @@ function Shooter.NewShooter(x, y, joystick, facing, name, sprite)
 end
 
 function Shooter:determineState(joystick)
-  if joystick:isGamepadDown('b') then
-    Shooter.Assets.Audio.click:stop()
-    Shooter.Assets.Audio.click:play()
-  end
   if self.state ~= Shooter.IDLE then return end
 
   for key, state in pairs(Shooter.MAPPINGS) do
@@ -94,6 +90,7 @@ end
 
 function Shooter:eventHandler()
   return function(name)
+    if self:isDead() then return end
     if name == 'animationEnd' then
       self.sprite:setState('idle')
       self.state = Shooter.IDLE
@@ -154,7 +151,7 @@ function Shooter:shoot(speed)
   if self.bulletsLeft > 0 then
     gunX, gunY = self:gunPosition()
     Bullet.FireBullet(gunX, gunY, self.facing, speed)
-    self.bulletsLeft = self.bulletsLeft - 1
+    -- self.bulletsLeft = self.bulletsLeft - 1
   else
     Shooter.Assets.Audio.click:stop()
     Shooter.Assets.Audio.click:play()
@@ -200,6 +197,6 @@ function Shooter:draw()
   love.graphics.rectangle('line', self:bindingBox())
   if self.state == Shooter.DEAD then love.graphics.setColor(255, 0, 0) end
   self:drawSprite()
-  love.graphics.print('Bullets ' .. self.bulletsLeft, self.position.x - 100, self.position.y - 30)
+  love.graphics.print(self.name, self.position.x, self.position.y - 200)
   love.graphics.reset()
 end
