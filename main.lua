@@ -5,6 +5,7 @@ require('sprite_frame_definitions')
 require('screen_dimmer')
 require('countdown_timer')
 require('joystick_wrapper')
+require('tumbleweed')
 
 minRequiredJoysticks = 2
 Assets = {
@@ -71,6 +72,7 @@ function love.update(dt)
   updateCurrentGameState(dt)
   dimmer:update(dt)
   Bullet.UpdateBullets(dt)
+  Tumbleweed.updateTumbleweeds(dt)
   if anyoneDead() then
     setSong(Audio.victory)
   end
@@ -102,6 +104,7 @@ function love.draw()
   end
   love.graphics.print("Current: " .. currentGameState .. " Timer Value: " .. gameStateCounter, 10, 10)
   Bullet.DrawBullets()
+  Tumbleweed.drawTumbleweeds()
   dimmer:draw()
   DrawOverlay()
 end

@@ -1,21 +1,25 @@
 Tumbleweed = {}
-Tumbleweed.__index = {}
+Tumbleweed.__index = Tumbleweed
 
 Tumbleweed.Assets = {
-  ['Graphics'] = {}
+  ['Graphics'] = {
+    ['tumbleweed'] = love.graphics.newImage('Assets/Art/tumbleweed.png')
+  }
 }
 
 Tumbleweed.LiveTumbleweeds = {}
 Tumbleweed.DeadTumbleweeds = {}
 
 function Tumbleweed.randomTumbleweed()
-  direction = math.random(1, 2) == 1 ? 'left' : 'right'
-  speed = math.floor(math.random()*100)*100
+  if table.getn(Tumbleweed.LiveTumbleweeds) > 1 then return end
+  if math.random() > 0.25 then return end
+  direction = (math.random(1, 2) == 1) and 'left' or 'right'
+  speed = 150
   Tumbleweed.placeTumbleweed(direction, speed)
 end
 
 function Tumbleweed.placeTumbleweed(direction, speed)
-  tumble = NewTumbleweed(direction, speed)
+  tumble = Tumbleweed.NewTumbleweed(direction, speed)
   added = false
   for i, _ in pairs(Tumbleweed.LiveTumbleweeds) do
     if not added and not Tumbleweed.LiveTumbleweeds[i] then
@@ -27,7 +31,8 @@ function Tumbleweed.placeTumbleweed(direction, speed)
 end
 
 function Tumbleweed.updateTumbleweeds(dt)
-  for i, tumble in Tumbleweed.LiveTumbleweeds do
+  Tumbleweed.randomTumbleweed()
+  for i, tumble in pairs(Tumbleweed.LiveTumbleweeds) do
     if tumble then
       if tumble:dead() then
         table.insert(Tumbleweed.DeadTumbleweeds, tumble)
@@ -39,8 +44,8 @@ function Tumbleweed.updateTumbleweeds(dt)
   end
 end
 
-function Tumbleweed.drawTumbleweeds(dt)
-  for i, tumble in Tumbleweed.LiveTumbleweeds do
+function Tumbleweed.drawTumbleweeds()
+  for i, tumble in pairs(Tumbleweed.LiveTumbleweeds) do
     if tumble then tumble:draw() end
   end
 end
@@ -53,6 +58,7 @@ function Tumbleweed.NewTumbleweed(direction, speed)
 
   tumble.direction = direction
   tumble.rotation = 0
+  tumble.rollingTime = 0
   tumble:setSpeed(speed)
   tumble:determineStartPoint()
   return tumble
@@ -64,27 +70,45 @@ function Tumbleweed:determineStartPoint()
   else
     self.x = -self:getWidth()
   end
+  self.offsetY = 0
+  self.y = love.graphics.getHeight() - self:getHeight()
 end
 
 function Tumbleweed:setSpeed(speed)
   self.speed = speed
-  if self:goingLeft() then self.speed = -speed end
+  if self:goingLeft() then
+    self.speed = -speed
+  end
 end
 
 function Tumbleweed:goingLeft()
-  self.direction == 'left'
+  return self.direction == 'left'
+end
+
+function Tumbleweed:dead()
+  if self:goingLeft() then
+    return self.x < -self:getWidth()
+  else
+    return self.x > love.graphics.getWidth() + self:getWidth()
+  end
 end
 
 function Tumbleweed:getWidth()
-  return 25
+  return Tumbleweed.Assets.Graphics.tumbleweed:getWidth()
 end
 
 function Tumbleweed:getHeight()
-  return 25
+  return Tumbleweed.Assets.Graphics.tumbleweed:getHeight()
 end
 
 function Tumbleweed:update(dt)
+  self.rollingTime = self.rollingTime + dt
+  self.x = self.x + self.speed*dt
+  self.offsetY = -math.abs(math.cos(self.x/50) * 25)
+  self.rotation = math.pi*self.rollingTime
+  if self:goingLeft() then self.rotation = -self.rotation end
 end
 
 function Tumbleweed:draw()
+  love.graphics.draw(Tumbleweed.Assets.Graphics.tumbleweed, self.x, self.y + self.offsetY, self.rotation, 2, 2, self:getWidth()/2, self:getHeight()/2)
 end
