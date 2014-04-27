@@ -4,6 +4,7 @@ require('loopable_sprite')
 require('sprite_frame_definitions')
 require('screen_dimmer')
 require('countdown_timer')
+require('joystick_wrapper')
 
 minRequiredJoysticks = 2
 Assets = {
@@ -48,15 +49,7 @@ function love.load(arg)
 
   setSong(Audio.theme)
   count = love.joystick.getJoystickCount()
-  if count >= minRequiredJoysticks then
-    grabJoysticks()
-    message = "You have sufficient controllers"
-  else
-    message = "You require additional controllers"
-    player1 = Shooter.Stub(Shooter.LEFT)
-    player2 = Shooter.Stub(Shooter.RIGHT)
-    players = {player1, player2}
-  end
+  initializePlayers(grabJoysticks())
 end
 
 function love.keypressed(k, u)
@@ -112,22 +105,23 @@ function love.draw()
 end
 
 function grabJoysticks()
-  width = love.graphics.getWidth()
-  height = love.graphics.getHeight()
+  player1Joy, player2Joy = nil, nil
   joysticks = love.joystick.getJoysticks()
   for i, joystick in pairs(joysticks) do
-    if not player1 then
-      player1 = Shooter.BuildShooter(Shooter.RIGHT, "Player 1", joystick, Sprites.Princess1)
-    elseif not player2 then
-      guid = joystick:getID()
-      if player1.joystick:getID() ~= guid then
-        player2 = Shooter.BuildShooter(Shooter.LEFT, "Player 2", joystick, Sprites.Princess2)
-      end
-    else
-      break
+    if joystick:getID() == 1 then
+      player1Joy = joystick
+    elseif joystick:getID() == 2 then
+      player2Joy = joystick
     end
-
   end
+  return player1Joy, player2Joy
+end
+
+function initializePlayers(player1Joy, player2Joy)
+  wrapper1 = JoystickWrapper.newJoystick(player1Joy, JoystickWrapper.Mappings.Player1)
+  wrapper2 = JoystickWrapper.newJoystick(player2Joy, JoystickWrapper.Mappings.Player2)
+  player1 = Shooter.BuildShooter(Shooter.RIGHT, "Player 1", wrapper1, Sprites.Princess1)
+  player2 = Shooter.BuildShooter(Shooter.LEFT, "Player 2", wrapper2, Sprites.Princess2)
   players = {player1, player2}
 end
 
@@ -168,11 +162,10 @@ end
 
 function gameover(dt)
   controllersOn = false
-  joys = love.joystick.getJoysticks()
-  for i, joy in pairs(joys) do
-    if joy:isGamepadDown('back') then
+  for i, player in pairs(players) do
+    if player.joystick:isGamepadDown('back') then
       currentGameState = 0
-    elseif joy:isGamepadDown('start') then
+    elseif player.joystick:isGamepadDown('start') then
       currentGameState = 1
     end
     if currentGameState ~= 4 then reset() end
