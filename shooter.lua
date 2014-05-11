@@ -219,7 +219,7 @@ end
 
 function Shooter:drawDebugInfo()
   if not gameDebug then return end
-  if self.state == Shooter.DEAD then love.graphics.setColor(255, 0, 0) end
+  if self.state == Shooter.DEAD then ç(255, 0, 0) end
   love.graphics.rectangle('line', self:bindingBox())
   love.graphics.print(self.name, self.position.x, self.position.y - 200)
 end

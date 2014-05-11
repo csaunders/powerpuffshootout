@@ -7,6 +7,11 @@ require('countdown_timer')
 require('joystick_wrapper')
 require('tumbleweed')
 
+require('scenes.attract_mode')
+
+State = require('hump.gamestate')
+
+
 minRequiredJoysticks = 2
 Assets = {
   ['Audio'] = {
@@ -53,6 +58,8 @@ function love.load(arg)
   setSong(Audio.theme)
   count = love.joystick.getJoystickCount()
   initializePlayers(grabJoysticks())
+  State.registerEvents()
+  State.switch(AttractMode)
 end
 
 function love.keypressed(k, u)
