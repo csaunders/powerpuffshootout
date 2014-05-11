@@ -1,4 +1,5 @@
 Introduction = {}
+require('scenes.shootout')
 
 function Introduction:keyreleased(key, code)
 end
@@ -11,7 +12,9 @@ end
 function Introduction:update(dt)
   self.count = self.count + dt
   if self.count > 1 then self.ticks = self.ticks + 1 end
-  if self.ticks >= 5 then print('donezos') end
+  if self.ticks >= 5 then
+    State.switch(Shootout)
+  end
 end
 
 function Introduction:draw()
