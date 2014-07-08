@@ -9,6 +9,7 @@ require('tumbleweed')
 
 require('scenes.attract_mode')
 
+local lovetest = require('test/lovetest')
 State = require('hump.gamestate')
 
 function love.load(arg)
@@ -16,6 +17,8 @@ function love.load(arg)
     gameDebug = true
     require("mobdebug").start()
   end
+
+  if lovetest.detect(arg) then lovetest.run() end
 
   State.registerEvents()
   State.switch(AttractMode)
