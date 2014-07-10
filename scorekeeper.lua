@@ -1,4 +1,5 @@
 Scorekeeper = {}
+Scorekeeper.font = love.graphics.newFont('Assets/Fonts/BebasNeue.ttf', 50)
 Scorekeeper.__index = Scorekeeper
 
 ScorekeeperGlobalScore = nil
@@ -50,9 +51,10 @@ function Scorekeeper:reset()
 end
 
 function Scorekeeper:draw()
-  love.graphics.setColor(0, 255, 0)
+  love.graphics.setColor(255, 255, 255)
+  love.graphics.setFont(Scorekeeper.font)
   for _, score in pairs(self.scores) do
-    love.graphics.print(score.value, score.x, score.y, 0, 2.5)
+    love.graphics.print(score.value, score.x, score.y)
   end
   love.graphics.reset()
 end

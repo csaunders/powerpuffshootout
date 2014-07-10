@@ -14,7 +14,7 @@ function Tumbleweed.randomTumbleweed()
   if table.getn(Tumbleweed.LiveTumbleweeds) > 1 then return end
   if math.random() > 0.9 then return end
   direction = (math.random(1, 2) == 1) and 'left' or 'right'
-  speed = 150
+  speed = 150 * (0.5 + math.random())
   Tumbleweed.placeTumbleweed(direction, speed)
 end
 
@@ -59,6 +59,7 @@ function Tumbleweed.NewTumbleweed(direction, speed)
   tumble.direction = direction
   tumble.rotation = 0
   tumble.rollingTime = 0
+  tumble.rollingModifier = 0.75 + math.random()
   tumble:setSpeed(speed)
   tumble:determineStartPoint()
   return tumble
@@ -104,7 +105,7 @@ end
 function Tumbleweed:update(dt)
   self.rollingTime = self.rollingTime + dt
   self.x = self.x + self.speed*dt
-  self.offsetY = -math.abs(math.cos(self.x/50) * 25)
+  self.offsetY = -math.abs(math.cos(self.x/50) * 25 * self.rollingModifier)
   self.rotation = math.pi*self.rollingTime
   if self:goingLeft() then self.rotation = -self.rotation end
 end

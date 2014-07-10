@@ -85,9 +85,9 @@ function Shootout:draw()
   end
   Bullet.DrawBullets()
   Tumbleweed.drawTumbleweeds()
+  Scorekeeper.GetInstance():draw()
   dimmer:draw()
   DrawOverlay()
-  Scorekeeper.GetInstance():draw()
 end
 
 function Shootout:focus(isfocused)
