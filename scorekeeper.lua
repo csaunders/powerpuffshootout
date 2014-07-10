@@ -1,21 +1,24 @@
-Scorekeeper = {GlobalScore = nil}
+Scorekeeper = {}
 Scorekeeper.__index = Scorekeeper
 
+ScorekeeperGlobalScore = nil
+
 function Scorekeeper.GetInstance()
-  if Scorekeeper.GlobalScore == nil then
-    Scorekeeper.GlobalScore = Scorekeeper.NewScorekeeper()
+  if ScorekeeperGlobalScore == nil then
+    ScorekeeperGlobalScore = Scorekeeper.NewScorekeeper()
   end
-  return Scorekeeper.GlobalScore
+  return ScorekeeperGlobalScore
 end
 
 function Scorekeeper.NewScorekeeper()
-  local self = setmetatable({['scores'] = {}}, Scorekeeper)
+  local self = setmetatable({}, Scorekeeper)
+  self.scores = {}
   return self
 end
 
 function Scorekeeper:addScoreable(name, attributes)
   self.scores[name] = attributes
-  self.scores[name]['value'] = 0
+  self.scores[name].value = 0
 end
 
 function Scorekeeper:increment(name)
