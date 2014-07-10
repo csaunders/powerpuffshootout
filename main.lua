@@ -21,7 +21,7 @@ function love.load(arg)
   if lovetest.detect(arg) then lovetest.run() end
 
   State.registerEvents()
-  State.switch(AttractMode)
+  State.switch(Shootout)
 end
 
 function love.keypressed(k, u)

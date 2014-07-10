@@ -1,3 +1,5 @@
+require('scorekeeper')
+
 Shootout = {}
 
 minRequiredJoysticks = 2
@@ -85,6 +87,7 @@ function Shootout:draw()
   Tumbleweed.drawTumbleweeds()
   dimmer:draw()
   DrawOverlay()
+  Scorekeeper.GetInstance():draw()
 end
 
 function Shootout:focus(isfocused)
@@ -123,9 +126,14 @@ function initializePlayers(player1Joy, player2Joy)
   player2 = Shooter.BuildShooter(Shooter.LEFT, "player1", wrapper2, Sprites.Princess1)
   player1 = Shooter.BuildShooter(Shooter.RIGHT, "player2", wrapper1, Sprites.Princess2)
   players = {player1, player2}
+  scores = Scorekeeper.GetInstance()
+  for _, player in pairs(players) do
+    scores:addScoreable(player.name, {['x'] = player.position.x, ['y'] = 25})
+  end
 end
 
 function reset()
+  scored = false
   dimmer:reset()
   countdown:reset()
   for i, player in pairs(players) do
@@ -147,7 +155,7 @@ end
 
 function updateCurrentGameState(dt)
   if currentSong then currentSong:update() end
-  print(currentGameState)
+
   if gameStates[currentGameState](dt) then
     currentGameState = currentGameState + 1
     gameStateCounter = 0
@@ -208,7 +216,10 @@ gameStates = {gameOverlay, countDown, play, gameover, credits}
 
 function anyoneDead()
   for i, player in pairs(players) do
-    if player:isDead() then return true end
+    if player:isDead() then
+      updateScore()
+      return true
+    end
   end
   return false
 end
@@ -220,6 +231,17 @@ function setSong(song)
   end
   currentSong = song
   currentSong:play()
+end
+
+function updateScore()
+  if scored then return end
+  scored = true
+  for _, player in pairs(players) do
+    if player:isDead() == false then
+      Scorekeeper.GetInstance():increment(player.name)
+      return
+    end
+  end
 end
 
 function DrawOverlay()

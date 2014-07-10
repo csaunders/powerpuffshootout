@@ -17,6 +17,12 @@ function Scorekeeper.NewScorekeeper()
 end
 
 function Scorekeeper:addScoreable(name, attributes)
+  if self.scores[name] == nil then
+    self:replaceScoreable(name, attributes)
+  end
+end
+
+function Scorekeeper:replaceScoreable(name, attributes)
   self.scores[name] = attributes
   self.scores[name].value = 0
 end
@@ -41,4 +47,12 @@ function Scorekeeper:reset()
   for name, drawdata in pairs(self.scores) do
     drawdata.value = 0
   end
+end
+
+function Scorekeeper:draw()
+  love.graphics.setColor(0, 255, 0)
+  for _, score in pairs(self.scores) do
+    love.graphics.print(score.value, score.x, score.y, 0, 2.5)
+  end
+  love.graphics.reset()
 end

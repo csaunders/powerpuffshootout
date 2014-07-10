@@ -20,6 +20,23 @@ function test_adding_a_scoreable()
   assert_keys({'player1', 'player2'}, scorekeeper.scores)
 end
 
+function test_adding_scoreable_does_not_replace_existing_one()
+  scorekeeper = Scorekeeper.NewScorekeeper()
+  scorekeeper:addScoreable('player1', {['x'] = 0, ['y'] = 0})
+  scorekeeper:increment('player1')
+  scorekeeper:addScoreable('player1', {['x'] = 0, ['y'] = 0})
+  assert_equal(1, scorekeeper:getScore('player1'))
+end
+
+function test_replace_scoreable_replaces_existing_one()
+  scorekeeper = Scorekeeper.NewScorekeeper()
+  scorekeeper:addScoreable('player1', {['x'] = 0, ['y'] = 0})
+  scorekeeper:increment('player1')
+  assert_equal(1, scorekeeper:getScore('player1'))
+  scorekeeper:replaceScoreable('player1', {['x'] = 0, ['y'] = 0})
+  assert_equal(0, scorekeeper:getScore('player1'))
+end
+
 function test_incrementing_a_score()
   scorekeeper = Scorekeeper.NewScorekeeper()
   scorekeeper:addScoreable('player1', {['x'] = 0, ['y'] = 0})
